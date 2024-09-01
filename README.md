@@ -14,3 +14,4 @@ Currently, two official plugins are available:
 - Login + Validation
 - Signup + Validation
 - Show books in main page
+- Creat book page
