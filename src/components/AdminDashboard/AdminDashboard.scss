@@ -1,0 +1,20 @@
+.admindashboard-container {
+    width: 100%;
+    height: calc(100vh - 4rem);
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .buttons-container {
+        margin-top: 10rem;
+        display: flex;
+        gap: 3rem;
+    }
+
+    .bookslist-container {
+        max-height: 40rem;
+        display: grid;
+        
+    }
+}

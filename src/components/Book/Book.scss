@@ -1,0 +1,49 @@
+.book-container {
+  height: calc(100vh - 4rem);
+  margin-top: 4rem;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 5rem;
+  img {
+    width: 40rem;
+    height: 70rem;
+  }
+
+  .details-and-purchase {
+    p {
+      margin-top: 14rem;
+      direction: rtl;
+    }
+
+    .purchase-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10rem;
+      .purchase-money {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+
+        .price-before {
+          text-decoration: line-through;
+          color: #ccc;
+        }
+      }
+      
+
+      .amount-controller {
+        display: flex;
+        gap: 0.5rem;
+        button {
+          width: 3rem;
+        }
+        input {
+          width: 2rem;
+          text-align: center;
+        }
+      }
+    }
+  }
+}

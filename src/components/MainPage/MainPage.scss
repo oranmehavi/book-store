@@ -1,0 +1,36 @@
+.mainpage-container {
+    min-height: calc(100vh - 4rem);
+    width: 100%;
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .books-container {
+        width: 70%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 30rem);
+        row-gap: 5rem;       
+        .book {
+            justify-self: center;
+            cursor: pointer;
+            img {
+                width: 20rem;
+                height: 30rem;
+            }
+
+            h4,
+            h5 {
+                text-align: center;
+                margin-top: .5rem;
+            }
+
+            .price-before {
+                text-decoration: line-through;
+                color: #ccc;
+            }
+
+        }
+    }
+    
+}

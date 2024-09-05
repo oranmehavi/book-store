@@ -15,3 +15,5 @@ Currently, two official plugins are available:
 - Signup + Validation
 - Show books in main page
 - Creat book page
+- Basic routing
+- Add and get users from local storage
