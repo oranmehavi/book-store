@@ -1,4 +1,16 @@
 import { initialBooks } from "../data/initialBooks";
+import { initialUsers } from "../data/users";
+
+export const loadAllUsers = () => {
+    const users = JSON.parse(localStorage.getItem("users"));
+    if (users == null) {
+        insertInitialUsersToStorage();
+    }
+};
+
+const insertInitialUsersToStorage = () => {
+    localStorage.setItem("users", JSON.stringify(initialUsers));
+};
 
 export const getUser = (email, password) => {
     const users = JSON.parse(localStorage.getItem('users'));
@@ -31,6 +43,27 @@ export const addUser = (newUser) => {
         return {isError: false, errorMessage: "", user: newUser};
     }
 }
+
+export const editUserInLocalStorage = (editedUser) => {
+    const users = JSON.parse(localStorage.getItem('users'));
+    for (const [index, user] of users.entries()) {
+        if (user.id === editedUser.id) {
+            users[index] = {...editedUser};
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+};
+
+export const deleteUserFromLocalStorage = (userToDelete) => {
+    const users = JSON.parse(localStorage.getItem("users"));
+    const newUsers = [...users];
+    for (const [index, user] of newUsers.entries()) {
+        if (user.id === userToDelete.id) {
+            newUsers.splice(index, 1);
+            localStorage.setItem("users", JSON.stringify(newUsers));
+        }
+    }
+};
 
 export const loadAllBooks = () => {
     const books = JSON.parse(localStorage.getItem('books'));
@@ -77,7 +110,7 @@ export const editBookInLocalStorage = (index, changes) => {
     localStorage.setItem('books', JSON.stringify(newBooks));
 }
 
-export const deleteFromLocalStorage = (index) => {
+export const deleteBookFromLocalStorage = (index) => {
     const books = JSON.parse(localStorage.getItem('books'));
     const newBooks = [...books];
     newBooks.splice(index, 1);
@@ -93,3 +126,63 @@ export const getBookByID = (id) => {
 
     return {isError: true, errorMessage: "Book not found", bookData: null};
 }
+
+export const getListOfBooksByIds = (idList) => {
+    const booksList = [];
+    for (const id of idList) {
+        const res = getBookByID(id);
+        booksList.push(res.bookData);
+    }
+    return booksList;
+};
+
+export const loadCartFromLocalStorage = () => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    return cart;
+}
+export const addToCartInLocalStorage = (newItem) => {
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    if (cart == null) {
+        localStorage.setItem('cart', JSON.stringify([]));
+        cart = [];
+    }
+
+    for (const [index, item] of cart.entries()) {
+        if (item.id === newItem.id) {
+            item.quantity += newItem.quantity;
+            localStorage.setItem("cart", JSON.stringify(cart));
+            return {
+                isError: false,
+                errorMessage: "",
+                isNew: false,
+                index,
+                newQuantity: item.quantity     
+            }
+        }
+    }
+
+    cart.push(newItem);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    return {
+        isError: false,
+        errorMessage: "",
+        isNew: true,
+        index: -1
+    }
+}
+
+export const removeFromCartInLocalStorage = (index) => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    const newCart = [...cart];
+    newCart.splice(index, 1);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+}
+
+export const editCartItemQuantity = (index, newQuantity) => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    const newCart = [...cart];
+    newCart[index] = {...cart[index], quantity: newQuantity};
+    localStorage.setItem("cart", JSON.stringify(newCart))
+};
+
+

@@ -8,7 +8,7 @@ export default function SearchBooks({ searchBooks }) {
   };
   return (
     <div className="search-books">
-      <input type="text" onKeyDown={onEnterClicked} />
+      <input type="text" onKeyDown={onEnterClicked} placeholder="Search books"/>
     </div>
   );
 }

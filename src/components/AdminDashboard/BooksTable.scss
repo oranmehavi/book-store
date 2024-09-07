@@ -13,6 +13,7 @@ th,
 td {
   text-align: center;
   padding: 8px;
+  white-space: nowrap;
 }
 
 tr:nth-child(even) {
@@ -22,5 +23,41 @@ tr:nth-child(even) {
 .actions {
     button {
         margin-right: .5rem;
+        height: 3rem;
+        padding: 0 1rem;
+        border-radius: 10px;
+        cursor: pointer;
     }
+
+    .delete {
+      background-color: red;
+      color: white;
+    }
+
+    .edit {
+      background-color: lightgreen;
+      color: black;
+    }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.cell-header {
+  display: none;
+}
+@media (max-width: 450px) {
+
+  th {
+    display: none;
+  }
+  .cell-header {
+    display: block;
+    font-weight: bold;
+  }
+  td {
+    display: flex;
+    justify-content: space-between;
+  }
 }

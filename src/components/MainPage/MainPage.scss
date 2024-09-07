@@ -1,15 +1,13 @@
 .mainpage-container {
-    min-height: calc(100vh - 4rem);
+    min-height: calc(100vh - 6.4rem);
     width: 100%;
-    margin-top: 4rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     .books-container {
         width: 70%;
         display: grid;
-        grid-template-columns: repeat(auto-fit, 30rem);
+        grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
         row-gap: 5rem;       
         .book {
             justify-self: center;
@@ -17,6 +15,10 @@
             img {
                 width: 20rem;
                 height: 30rem;
+                transition: transform 1s;
+                &:hover {
+                    transform: scale(1.2);
+                }
             }
 
             h4,
@@ -33,4 +35,26 @@
         }
     }
     
+}
+
+.pagination {
+    margin-top: 6rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+
+    button {
+        width: 4rem;
+        height: 4rem;
+        font-size: 2rem;
+        font-weight: bold;
+        border: 2px solid black;
+        border-radius: 50%;
+        text-align: center;
+        cursor: pointer;
+
+        &.selected {
+            background-color: lightgreen;
+        }
+    }
 }

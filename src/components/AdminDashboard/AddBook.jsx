@@ -5,6 +5,7 @@ import { addBook } from "../../Utils/LocalStorage";
 import { BooksContext } from "../../context/BooksContext";
 import { addBookAction } from "../../actions/booksAction";
 import { nanoid } from "nanoid";
+import { useNavigate } from "react-router-dom";
 
 export default function AddBook() {
   const { booksDispatch } = useContext(BooksContext);
@@ -25,7 +26,8 @@ export default function AddBook() {
     false,
     false,
   ]);
-
+  const [addBookError, setAddBookError] = useState("");
+  const navigate = useNavigate();
   const isFormInvalid = () => {
     return validInputs.some((inputState) => inputState === false);
   };
@@ -105,11 +107,12 @@ export default function AddBook() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    const book = { ...formData, discont: 0, price: parseFloat(price), id: nanoid()};
+    const book = { ...formData, discont: 0, price: parseFloat(price), id: nanoid(), priceAfterDiscount: parseFloat(price)};
     const res = addBook(book);
     if (res.isError) {
-      console.log(res.isError);
+      setAddBookError(res.errorMessage);
     } else {
+      setAddBookError("");
       booksDispatch(addBookAction(res.book));
       navigate("/dashboard");
     }
@@ -162,6 +165,7 @@ export default function AddBook() {
           {!validInputs[4] && (
             <h3 className="invalid-message">{imageUrlError}</h3>
           )}
+          {addBookError !== "" && <div className="error-message">{addBookError}</div>}
           <button disabled={isFormInvalid()}>Add book</button>
         </form>
       </div>

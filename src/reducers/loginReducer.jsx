@@ -5,6 +5,12 @@ const loginReducer = (userData, action) => {
         case "LOGIN":
             return {user: {...action.user}}
         
+        case "EDIT_USER":
+            return {
+                user: {
+                    ...action.editedUser
+                }
+            }
         case "LOGOUT":
             return {user: null};
         

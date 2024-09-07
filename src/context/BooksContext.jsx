@@ -10,7 +10,6 @@ export default function BooksContextProvider({ children }) {
   const [booksState, booksDispatch] = useReducer(booksReducer, []);
 
   useEffect(() => {
-    console.log("here");
     const books = loadAllBooks();
     booksDispatch(initBooks(books));
   }, []);

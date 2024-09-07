@@ -4,6 +4,7 @@ import { getUser } from "../../Utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import { loginAction } from "../../actions/loginActions";
+import { saveUserOnCookie } from "../../Utils/cookies";
 export default function LoginForm(props) {
     const {dispatchUserData} = useContext(LoginContext);
     const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ export default function LoginForm(props) {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [validInputs, setValidInputs] = useState([false, false]);
+    const [loginError, setLoginError] = useState("");
     const navigate = useNavigate();
     
     const isFormInvalid = () => {
@@ -57,10 +59,12 @@ export default function LoginForm(props) {
       const formData = Object.fromEntries(new FormData(e.target).entries());
       const res = getUser(formData.email, formData.password);
       if (res.isError) {
-
+        setLoginError(res.errorMessage);
       }
       else {
+        setLoginError("");
         dispatchUserData(loginAction(res.user));
+        saveUserOnCookie({user: res.user})
         navigate('/home');
       }
     }
@@ -69,9 +73,10 @@ export default function LoginForm(props) {
           <h3>Login</h3>
           <form onSubmit={handleSubmit}>
             <input type="text" placeholder="email" name="email" onBlur={onEmailBlur}/>
-            {!validInputs[0] && <h3 className="invalid-message">{emailError}</h3>}
+            {!validInputs[0] && <h4 className="invalid-message">{emailError}</h4>}
             <input type="password" placeholder="password" name="password" onBlur={onPasswordBlur}/>
-            {!validInputs[1] && <h3 className="invalid-message">{passwordError}</h3>}
+            {!validInputs[1] && <h4 className="invalid-message">{passwordError}</h4>}
+            {loginError !== "" && <div className="error-message">{loginError}</div>}
             <div className="nav">
             <button type="submit" disabled={isFormInvalid()}>
               Login

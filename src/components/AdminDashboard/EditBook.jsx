@@ -59,7 +59,7 @@ export default function EditBook() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    const changes = {price: parseFloat(price), discount: parseInt(discount)}
+    const changes = {price: parseFloat(price), discount: parseInt(discount), priceAfterDiscount: parseFloat(price) * (100 - parseInt(discount)) / 100}
     editBookInLocalStorage(index, changes);
     booksDispatch(editBookAction(index, changes));
     navigate("/dashboard");

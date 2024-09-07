@@ -1,7 +1,7 @@
 .admindashboard-container {
     width: 100%;
-    height: calc(100vh - 4rem);
-    margin-top: 4rem;
+    height: calc(100vh - 6.4rem);
+    margin-top: 6.4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,12 +9,29 @@
     .buttons-container {
         margin-top: 10rem;
         display: flex;
+        align-items: center;
         gap: 3rem;
+
+        button {
+            height: 3rem;
+            padding: 0 3rem;
+            background-color: lightgreen;
+            border: 2px solid black;
+            border-radius: 10px;
+            cursor: pointer;
+
+            &:active {
+                background-color: green;
+            }
+        }
     }
 
     .bookslist-container {
+        margin-top: 2rem;
         max-height: 40rem;
         display: grid;
         
     }
+
+
 }

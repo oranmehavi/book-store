@@ -1,0 +1,51 @@
+.userdetails-main {
+  height: calc(100vh - 4rem);
+  width: 100%;
+  margin-top: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.userdetails-container {
+  min-width: 40%;
+  border: 2px solid green;
+  background-color: lightgreen;
+  border-radius: 5px;
+  margin: 2rem;
+  padding: 1rem;
+}
+
+.userdetails {
+  .name-and-controls {
+    display: flex;
+    justify-content: space-between;
+
+    .controls {
+      button {
+        height: 3rem;
+        padding: 0 1rem;
+        margin-left: 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .delete {
+        background-color: red;
+        color: white;
+      }
+
+      .edit {
+        background-color: green;
+        color: white;
+      }
+    }
+  }
+
+  .details {
+    margin-top: 3rem;
+
+    h3 {
+      margin-top: 0.5rem;
+    }
+  }
+}

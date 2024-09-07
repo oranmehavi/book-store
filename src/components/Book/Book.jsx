@@ -4,11 +4,14 @@ import "./Book.scss";
 import { BooksContext } from "../../context/BooksContext";
 import { useParams } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
-import { getBookByID } from "../../Utils/LocalStorage";
+import { addToCartInLocalStorage, getBookByID } from "../../Utils/LocalStorage";
+import { CartContext } from "../../context/CartContext";
+import { addToCartAction, editCart } from "../../actions/cartActions";
 
 export default function Book() {
   // const { booksState } = useContext(BooksContext);
   const { userData } = useContext(LoginContext);
+  const { cartState, cartDispatch} = useContext(CartContext);
   const [bookData, setBookData] = useState(null);
   const [amount, setAmount] = useState(1);
   const id = useParams().id;
@@ -25,9 +28,21 @@ export default function Book() {
   };
 
   const decreaseAmount = () => {
-    if (amount > 0) setAmount(amount - 1);
+    if (amount > 1) setAmount(amount - 1);
   };
 
+  const addToCart = () => {
+    const res = addToCartInLocalStorage({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount});
+    if (!res.isNew) {
+      cartDispatch(editCart(res.index, res.newQuantity));
+    }
+    else {
+      cartDispatch(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
+    }
+
+    alert(`Added ${amount} books to cart`);
+  };
+  
   return (
     <>
       {bookData?.book && (
@@ -36,13 +51,11 @@ export default function Book() {
             <p>{bookData.book.summary}</p>
             <div className="purchase-section">
               <div className="purchase-money">
-                <button>Purchase!</button>
+                <button onClick={() => addToCart()}>Add to cart!</button>
                 <h4>
                   {!!userData.user
                     ? (
-                        (bookData.book.price *
-                          (100 - bookData.book.discount)) /
-                        100
+                        bookData.book.priceAfterDiscount
                       ).toLocaleString("he-IL", {
                         style: "currency",
                         currency: "ILS",
@@ -63,7 +76,7 @@ export default function Book() {
               </div>
               <div className="amount-controller">
                 <button onClick={() => increaseAmount()}>+</button>
-                <input type="text" defaultValue={1} value={amount} />
+                <input type="text" defaultValue={1} value={amount} disabled/>
                 <button onClick={() => decreaseAmount()}>-</button>
               </div>
             </div>
