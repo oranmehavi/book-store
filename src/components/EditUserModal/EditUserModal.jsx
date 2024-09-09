@@ -92,15 +92,15 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
         {user && (
           <form className="modal-form" onSubmit={handleSubmit}>
             <h3>Edit details</h3>
-            <input type="text" placeholder="Full name" defaultValue={user.fullname} onBlur={onFullNameBlur} name="fullname"/>
+            <input type="text" placeholder="Full name" defaultValue={user.fullname} onChange={onFullNameBlur} name="fullname"/>
             {!validInputs[0] && (
               <h4 className="invalid-message">{fullNameError}</h4>
             )}
-            <input type="text" placeholder="Username" defaultValue={user.username} onBlur={onUsernameBlur} name="username"/>
+            <input type="text" placeholder="Username" defaultValue={user.username} onChange={onUsernameBlur} name="username"/>
             {!validInputs[1] && (
               <h4 className="invalid-message">{usernameError}</h4>
             )}
-            <input type="text" placeholder="Email" defaultValue={user.email} onBlur={onEmailBlur} name="email"/>
+            <input type="text" placeholder="Email" defaultValue={user.email} onChange={onEmailBlur} name="email"/>
             {!validInputs[2] && (
               <h4 className="invalid-message">{emailError}</h4>
             )}
@@ -108,7 +108,7 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
               type="password"
               placeholder="Password"
               defaultValue={user.password}
-              onBlur={onPasswordBlur}
+              onChange={onPasswordBlur}
               name="password"
             />
             {!validInputs[3] && (

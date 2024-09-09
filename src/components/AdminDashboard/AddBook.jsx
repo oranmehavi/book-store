@@ -107,7 +107,13 @@ export default function AddBook() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    const book = { ...formData, discont: 0, price: parseFloat(price), id: nanoid(), priceAfterDiscount: parseFloat(price)};
+    const book = {
+      ...formData,
+      discont: 0,
+      price: parseFloat(price),
+      id: nanoid(),
+      priceAfterDiscount: parseFloat(price),
+    };
     const res = addBook(book);
     if (res.isError) {
       setAddBookError(res.errorMessage);
@@ -127,7 +133,7 @@ export default function AddBook() {
             type="text"
             placeholder="Book name"
             name="bookName"
-            onBlur={onBooknameBlur}
+            onChange={onBooknameBlur}
           />
           {!validInputs[0] && (
             <h3 className="invalid-message">{booknameError}</h3>
@@ -136,7 +142,7 @@ export default function AddBook() {
             type="text"
             placeholder="Author"
             name="author"
-            onBlur={onAuthorBlur}
+            onChange={onAuthorBlur}
           />
           {!validInputs[1] && (
             <h3 className="invalid-message">{authorError}</h3>
@@ -144,7 +150,7 @@ export default function AddBook() {
           <textarea
             placeholder="Summary"
             name="summary"
-            onBlur={onSummaryBlur}
+            onChange={onSummaryBlur}
           />
           {!validInputs[2] && (
             <h3 className="invalid-message">{summaryError}</h3>
@@ -153,20 +159,25 @@ export default function AddBook() {
             type="text"
             placeholder="Price"
             name="price"
-            onBlur={onPriceBlur}
+            onChange={onPriceBlur}
           />
           {!validInputs[3] && <h3 className="invalid-message">{priceError}</h3>}
           <input
             type="text"
             placeholder="Image url"
             name="image"
-            onBlur={onUrlBlur}
+            onChange={onUrlBlur}
           />
           {!validInputs[4] && (
             <h3 className="invalid-message">{imageUrlError}</h3>
           )}
-          {addBookError !== "" && <div className="error-message">{addBookError}</div>}
-          <button disabled={isFormInvalid()}>Add book</button>
+          {addBookError !== "" && (
+            <div className="error-message">{addBookError}</div>
+          )}
+          <div className="buttons">
+            <button disabled={isFormInvalid()}>Add book</button>
+            <button type="button" onClick={() => navigate(-1)}>Cancel</button>
+          </div>
         </form>
       </div>
     </div>

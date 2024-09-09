@@ -77,27 +77,49 @@ export default function SignupForm(props) {
 
   const onPasswordBlur = (e) => {
     const passwordInput = e.target.value.trim();
+    setPassword(passwordInput);
     if (passwordInput === "") {
       setPasswordError("Password should not be empty");
       updateValidInputs(3, false);
-    } else {
+    }
+    else if (passwordInput !== "" && confirmPassword === "") {
+      setPasswordError("");
+      setPassword(passwordInput);
+    }
+    else if (confirmPassword !== "" && passwordInput !== confirmPassword){
+      updateValidInputs(4, false);
+      setPassword(passwordInput);
+      setConfirmPasswordError("Passwords should match");
+      console.log(validInputs);
+    }
+    else {
       setPassword(passwordInput);
       setPasswordError("");
-      updateValidInputs(3, true);
-      console.log(validInputs);
+      updatePasswordInputsStateToTrue();
+      setConfirmPasswordError("");
     }
   };
 
   const onConfirmPasswordBlur = (e) => {
     const confirmPasswordInput = e.target.value.trim();
+    setConfirmPassword(confirmPasswordInput);
     if (password !== "" && confirmPasswordInput !== password) {
+      console.log("error");
+      setConfirmPassword(confirmPasswordInput);
       setConfirmPasswordError("Passwords should match");
       updateValidInputs(4, false);
     } else {
       setConfirmPassword(confirmPasswordInput);
       setConfirmPasswordError("");
-      updateValidInputs(4, true);
+      updatePasswordInputsStateToTrue();
     }
+  };
+
+  const updatePasswordInputsStateToTrue = () => {
+    const newValidInputs = [...validInputs];
+    newValidInputs[3] = true;
+    newValidInputs[4] = true;
+    setValidInputs(newValidInputs);
   };
 
   const onClickLogin = () => {
@@ -108,7 +130,7 @@ export default function SignupForm(props) {
     e.preventDefault();
     const formData =Object.fromEntries(new FormData(e.target).entries());
     const {confirmPassword, ...user} = formData;
-    const res = addUser({...user, id: nanoid(), isAdmin: false});
+    const res = addUser({...user, id: nanoid(), isAdmin: false, cart: []});
     if (res.isError) {
       setSignupError(res.errorMessage);
     }
@@ -129,7 +151,7 @@ export default function SignupForm(props) {
             type="text"
             placeholder="Full name"
             name="fullname"
-            onBlur={onFullNameBlur}
+            onChange={onFullNameBlur}
           />
           {!validInputs[0] && (
             <h4 className="invalid-message">{fullNameError}</h4>
@@ -138,7 +160,8 @@ export default function SignupForm(props) {
             type="text"
             placeholder="Username"
             name="username"
-            onBlur={onUsernameBlur}
+            onChange={onUsernameBlur}
+            
           />
           {!validInputs[1] && (
             <h4 className="invalid-message">{usernameError}</h4>
@@ -147,14 +170,14 @@ export default function SignupForm(props) {
             type="text"
             placeholder="Email"
             name="email"
-            onBlur={onEmailBlur}
+            onChange={onEmailBlur}
           />
           {!validInputs[2] && <h4 className="invalid-message">{emailError}</h4>}
           <input
             type="password"
             placeholder="Password"
             name="password"
-            onBlur={onPasswordBlur}
+            onChange={onPasswordBlur}
           />
           {!validInputs[3] && (
             <h4 className="invalid-message">{passwordError}</h4>
@@ -163,7 +186,7 @@ export default function SignupForm(props) {
             type="password"
             placeholder="Confirm password"
             name="confirmPassword"
-            onBlur={onConfirmPasswordBlur}
+            onChange={onConfirmPasswordBlur}
           />
           {!validInputs[4] && (
             <h4 className="invalid-message">{confirmPasswordError}</h4>

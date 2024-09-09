@@ -75,11 +75,11 @@ export default function AdminAuthentication() {
         <div className="authentication-form">
           <h3>Admin login</h3>
           <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="email" name="email" onBlur={onEmailBlur}/>
+            <input type="text" placeholder="email" name="email" onChange={onEmailBlur}/>
             {!validInputs[0] && (
               <h4 className="invalid-message">{emailError}</h4>
             )}
-            <input type="password" placeholder="password" name="password" onBlur={onPasswordBlur}/>
+            <input type="password" placeholder="password" name="password" onChange={onPasswordBlur}/>
             {!validInputs[1] && (
               <h4 className="invalid-message">{passwordError}</h4>
             )}

@@ -16,7 +16,6 @@ export default function BooksContextProvider({ children }) {
 
   return (
     <BooksContext.Provider value={{ booksState, booksDispatch }}>
-      {/* <Outlet /> */}
       {children}
     </BooksContext.Provider>
   );

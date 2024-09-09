@@ -40,12 +40,12 @@ export default function Header() {
               Login
             </NavLink>
           )}
-          <NavLink
+          {!!userData.user && !userData.user.isAdmin && <NavLink
             to={"/cart"}
             className={({ isActive }) => (isActive ? "active-link" : "")}
           >
             Cart
-          </NavLink>
+          </NavLink>}
           {!!userData.user && !userData.user.isAdmin && (
             <NavLink
               to={"/account"}

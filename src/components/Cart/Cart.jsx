@@ -2,30 +2,37 @@ import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 import "./Cart.scss";
 import {
+  clearCart,
   editCartItemQuantity,
   getListOfBooksByIds,
   removeFromCartInLocalStorage,
 } from "../../Utils/LocalStorage";
 import { LoginContext } from "../../context/LoginContext";
-import { editCart, removeFromCart } from "../../actions/cartActions";
+import { clearCartAction, editCart, removeFromCart } from "../../actions/loginActions";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { saveUserOnCookie } from "../../Utils/cookies";
+import CartModal from "./CartModal";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-  const { cartState, cartDispatch } = useContext(CartContext);
-  const { userData } = useContext(LoginContext);
+  // const { cartState, cartDispatch } = useContext(CartContext);
+  const { userData, dispatchUserData } = useContext(LoginContext);
   const [booksList, setBooksList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalPriceAfterDiscount, setTotalPriceAfterDiscount] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (cartState.cart)
-      setBooksList(getListOfBooksByIds(cartState?.cart.map((item) => item.id)));
-    calculateTotals(booksList, cartState.cart);
-  }, [cartState.cart]);
+    if (userData.user?.cart)
+      setBooksList(
+        getListOfBooksByIds(userData.user.cart.map((item) => item.id))
+      );
+  }, [userData.user?.cart]);
 
   useEffect(() => {
-    calculateTotals(booksList, cartState.cart);
+    calculateTotals(booksList, userData.user?.cart);
   }, [booksList]);
 
   const calculateTotals = (booksList, cart) => {
@@ -39,42 +46,75 @@ export default function Cart() {
       }
       setTotalPrice(totalPriceF);
       setTotalPriceAfterDiscount(totalPriceAfterDiscountF);
+    } else {
+      setTotalPrice(0);
+      setTotalPriceAfterDiscount(0);
     }
   };
 
   const increaseQuantity = (index) => {
-    if (cartState.cart[index].quantity < 15) {
-      editCartItemQuantity(index, cartState.cart[index].quantity + 1);
-      cartDispatch(editCart(index, cartState.cart[index].quantity + 1));
+    if (userData.user.cart[index].quantity < 15) {
+      const res = editCartItemQuantity(
+        userData,
+        index,
+        userData.user.cart[index].quantity + 1
+      );
+      if (!res.isError) {
+        dispatchUserData(editCart(index, userData.user.cart[index].quantity + 1));
+        saveUserOnCookie(res.newUserData);
+      }
     }
   };
 
   const decreaseQuantity = (index) => {
-    if (cartState.cart[index].quantity > 1) {
-      editCartItemQuantity(index, cartState.cart[index].quantity - 1);
-      cartDispatch(editCart(index, cartState.cart[index].quantity - 1));
+    if (userData.user.cart[index].quantity > 1) {
+      const res = editCartItemQuantity(
+        userData,
+        index,
+        userData.user.cart[index].quantity - 1
+      );
+      if (!res.isError) {
+        dispatchUserData(editCart(index, userData.user.cart[index].quantity - 1));
+        saveUserOnCookie(res.newUserData);
+      }
     }
   };
 
   const remove = (index) => {
-    removeFromCartInLocalStorage(index);
-    cartDispatch(removeFromCart(index));
+    const res = removeFromCartInLocalStorage(userData, index);
+    if (!res.isError) {
+      dispatchUserData(removeFromCart(index));
+      saveUserOnCookie(res.newUserData);
+    }
   };
 
   const isCartEmpty = () => {
-    if (cartState.cart)
-      return cartState.cart.length === 0;
-  };
-  const buy = () => {
-    alert("You bought the books");
+    return userData.user.cart.length === 0;
   };
 
+  const confirmation = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+  
+  const buy  = () => {
+    const res = clearCart(userData);
+    if (!res.isError) {
+      dispatchUserData(clearCartAction());
+      saveUserOnCookie(res.newUserData);
+      navigate("/home")
+    }
+  };
+  
   return (
     <>
       <div className="cart-container">
         <div className="cart">
           {booksList.length > 0 &&
-            cartState.cart.map((item, index) => (
+            userData.user?.cart.map((item, index) => (
               <div className="cart-item">
                 <img src={booksList[index].book.image} alt="" />
                 <h4>{booksList[index].book.bookName}</h4>
@@ -114,6 +154,7 @@ export default function Cart() {
               </div>
             ))}
         </div>
+        <CartModal isModalOpen={isModalOpen} closeModal={closeModal} buy={buy}/>
       </div>
       <div className="total-price">
         <h3 className="total">
@@ -129,11 +170,12 @@ export default function Cart() {
               })}
         </h3>
         {!!userData.user && (
-          <button onClick={() => buy()} disabled={isCartEmpty()}>
+          <button onClick={() => confirmation()} disabled={isCartEmpty()}>
             Buy
           </button>
         )}
       </div>
+      
     </>
   );
 }

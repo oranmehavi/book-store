@@ -1,9 +1,8 @@
 import React from "react";
-import "./SearchBooks.scss";
 export default function SearchBooks({ searchBooks }) {
   const onEnterClicked = (e) => {
     if (e.key === "Enter") {
-        searchBooks(event.target.value.toLowerCase().trim())
+        searchBooks(e.target.value.toLowerCase().trim())
     }
   };
   return (

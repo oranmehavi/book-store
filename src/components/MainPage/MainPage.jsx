@@ -8,6 +8,7 @@ import { BooksContext } from "../../context/BooksContext";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import SearchBooks from "./SearchBooks";
+import "./SearchBooks.scss";
 
 export default function MainPage() {
   const { booksState, booksDispatch } = useContext(BooksContext);
@@ -22,11 +23,6 @@ export default function MainPage() {
   useEffect(() => {
     if (booksState.books) setShownBooks([...booksState.books]);
   }, [booksState.books]);
-
-  // useEffect(() => {
-  //   const books = loadAllBooks();
-  //   booksDispatch(initBooks(books));
-  // }, []);
 
   useEffect(() => {
     const indexOfLastBook = currentPage * booksPerPage;
@@ -47,6 +43,7 @@ export default function MainPage() {
             book.bookName.toLowerCase().includes(searchValue)
           )
     );
+    setCurrentPage(1);
   };
 
   const paginate = (pageNumber) => {

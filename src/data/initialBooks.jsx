@@ -21,8 +21,8 @@ export const initialBooks = [
     summary:
       "זהו רומן היסטורי שעלילתו מתפצלת לשני קווים מקבילים, ומתפרשת מאוסטריה שלקראת מלחמת העולם השנייה ועד ללוס אנג’לס של שנות התשעים.",
     price: 120,
-    discount: 0,
-    priceAfterDiscount: 120,
+    discount: 50,
+    priceAfterDiscount: 60,
   },
   {
     id: nanoid(),

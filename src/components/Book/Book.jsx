@@ -6,14 +6,15 @@ import { useParams } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import { addToCartInLocalStorage, getBookByID } from "../../Utils/LocalStorage";
 import { CartContext } from "../../context/CartContext";
-import { addToCartAction, editCart } from "../../actions/cartActions";
+import { addToCartAction, editCart } from "../../actions/loginActions";
+import { saveUserOnCookie } from "../../Utils/cookies";
+import BookModal from "./BookModal";
 
 export default function Book() {
-  // const { booksState } = useContext(BooksContext);
-  const { userData } = useContext(LoginContext);
-  const { cartState, cartDispatch} = useContext(CartContext);
+  const { userData, dispatchUserData } = useContext(LoginContext);
   const [bookData, setBookData] = useState(null);
   const [amount, setAmount] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const id = useParams().id;
 
   useEffect(() => {
@@ -32,17 +33,26 @@ export default function Book() {
   };
 
   const addToCart = () => {
-    const res = addToCartInLocalStorage({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount});
+    const res = addToCartInLocalStorage(userData, {id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount});
+    console.log(res);
     if (!res.isNew) {
-      cartDispatch(editCart(res.index, res.newQuantity));
+      dispatchUserData(editCart(res.index, res.newQuantity));
+      saveUserOnCookie(res.newUserData);
     }
     else {
-      cartDispatch(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
+      dispatchUserData(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
+      saveUserOnCookie(res.newUserData);
     }
-
-    alert(`Added ${amount} books to cart`);
+    closeModal();
   };
   
+  const openModal = () => {
+    setIsModalOpen(true);
+  }
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
   return (
     <>
       {bookData?.book && (
@@ -51,7 +61,7 @@ export default function Book() {
             <p>{bookData.book.summary}</p>
             <div className="purchase-section">
               <div className="purchase-money">
-                <button onClick={() => addToCart()}>Add to cart!</button>
+                <button onClick={() => openModal()}>Add to cart!</button>
                 <h4>
                   {!!userData.user
                     ? (
@@ -83,6 +93,7 @@ export default function Book() {
           </div>
 
           <img src={bookData.book.image} alt="" />
+          <BookModal isModalOpen={isModalOpen} amount={amount} closeModal={closeModal} addToCart={addToCart}/>
         </div>
       )}
     </>

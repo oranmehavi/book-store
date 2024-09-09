@@ -8,12 +8,16 @@
 }
 
 .addbook-form__container {
-  width: 40%;
+  width: 60%;
   border: 2px solid green;
   border-radius: 5px;
   margin: 2rem;
   padding: 1rem;
   background-color: lightgreen;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 }
 
 .addbook-form {
@@ -45,12 +49,18 @@
     }
   }
 
+  .buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
   button {
     display: block;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     background: green;
     color: white;
     border-radius: 5px;
+    border: none;
     margin-top: 1rem;
     cursor: pointer;
 

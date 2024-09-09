@@ -1,0 +1,38 @@
+.cartmodal-container {
+  display: none;
+  position: absolute;
+  background-color: lightgreen;
+  width: 50%;
+  top: 50%;
+//   height: 20rem;
+padding: 2rem;;
+  border: 2px orangered solid;
+  border-radius: 5px;
+
+  &.open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  p {
+    font-weight: bold;
+  }
+  .buttons {
+    margin-top: 3rem;
+    display: flex;
+    gap: 2rem;
+    
+    button {
+        min-height: 2rem;
+        padding: .5rem 2rem;
+        background-color: blue;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+  }
+}
+
+

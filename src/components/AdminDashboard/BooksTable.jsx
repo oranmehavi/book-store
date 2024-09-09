@@ -67,14 +67,19 @@ export default function BooksTable({ books, booksDispatch }) {
             </td>
             <td className="actions">
               <span className="cell-header">Actions:</span>
-              <button className="edit" onClick={() => navigateToBookEdit(index)}>
-                Edit book
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-              <button className="delete" onClick={() => deleteBook(index)}>
-                Delete book
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+              <div className="buttons">
+                <button
+                  className="edit"
+                  onClick={() => navigateToBookEdit(index)}
+                >
+                  Edit book
+                  <FontAwesomeIcon icon={faPenToSquare} />
+                </button>
+                <button className="delete" onClick={() => deleteBook(index)}>
+                  Delete book
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
             </td>
           </tr>
         ))}

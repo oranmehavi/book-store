@@ -13,6 +13,7 @@ export default function LoginContextProvider({ children }) {
     loginReducer,
     cookieUserData || userDataInitialState
   );
+  console.log(userData);
   useEffect(() => {
     loadAllUsers();
   }, []);

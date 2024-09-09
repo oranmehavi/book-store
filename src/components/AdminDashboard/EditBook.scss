@@ -8,53 +8,67 @@
 }
 
 .editbook-form__container {
-  width: 40%;
+  width: 70%;
   border: 2px solid green;
   background-color: lightgreen;
   border-radius: 5px;
   margin: 2rem;
   padding: 1rem;
+
+  @media (max-width: 700px) {
+    width: 100%;
+  }
 }
 
 .editbook-form {
   .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    img {
+      height: 15rem;
+    }
     text-align: center;
   }
 
-  h4 {
+  .section {
     margin-top: 1rem;
-  }
-  input {
-    width: 100%;
-    padding: 0.5rem 0.5rem;
-    border: 1px solid green;
-    margin-top: 1rem;
-    border-radius: 5px;
-    &:focus {
-      outline: none;
+    input {
+      width: 100%;
+      padding: 0.5rem 0.5rem;
+      border: 1px solid green;
+      border-radius: 5px;
+      &:focus {
+        outline: none;
+      }
+    }
+  
+    textarea {
+      padding: 0.5rem 0.5rem;
+      resize: none;
+      border: 1px solid green;
+      border-radius: 5px;
+      width: 100%;
+      height: 10rem;
+      &:focus {
+        outline: none;
+      }
     }
   }
-
-  textarea {
-    margin-top: 1rem;
-    padding: 0.5rem 0.5rem;
-    resize: none;
-    border: 1px solid green;
-    border-radius: 5px;
-    width: 100%;
-    height: 10rem;
-    &:focus {
-      outline: none;
-    }
+  
+  .buttons {
+    display: flex;
+    gap: 1rem;
   }
-
   button {
     display: block;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     background: green;
     color: white;
     border-radius: 5px;
     margin-top: 1rem;
+    border: none;
     cursor: pointer;
 
     &:disabled {
