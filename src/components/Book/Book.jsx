@@ -61,7 +61,7 @@ export default function Book() {
             <p>{bookData.book.summary}</p>
             <div className="purchase-section">
               <div className="purchase-money">
-                <button onClick={() => openModal()}>Add to cart!</button>
+                <button className="purchase-button" onClick={() => openModal()} disabled={!userData.user}>Add to cart!</button>
                 <h4>
                   {!!userData.user
                     ? (

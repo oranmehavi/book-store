@@ -41,6 +41,11 @@
             background-color: green;
           }
         }
+
+        .purchase-button:disabled {
+          opacity: .5;
+          cursor: not-allowed;
+        }
         .price-before {
           text-decoration: line-through;
           color: #ccc;

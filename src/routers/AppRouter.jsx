@@ -65,6 +65,7 @@ export default function AppRouter() {
                 path="/book/:id"
                 element={
                   // <CartContextProvider>
+                  
                     <Book />
                   // </CartContextProvider>
                 }
@@ -74,7 +75,10 @@ export default function AppRouter() {
                 path="/cart"
                 element={
                   // <CartContextProvider>
+                  <UserLoggedinRoute>
+
                     <Cart />
+                  </UserLoggedinRoute>
                   // </CartContextProvider>
                 }
               />

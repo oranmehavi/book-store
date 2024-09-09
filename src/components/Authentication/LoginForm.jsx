@@ -57,7 +57,7 @@ export default function LoginForm(props) {
     const formData = Object.fromEntries(new FormData(e.target).entries());
     const res = getUser(formData.email, formData.password);
     if (res.isError) {
-      setLoginError(res.errorMessage);
+      setLoginError("Invalid username or password");
     } else {
       setLoginError("");
       dispatchUserData(loginAction(res.user));

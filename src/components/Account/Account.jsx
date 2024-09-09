@@ -9,20 +9,19 @@ import { deleteUserOnFromCookie } from "../../Utils/cookies";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DeleteAccountModal from "./DeleteAccountModal";
 
 export default function Account() {
   const { userData, dispatchUserData } = useContext(LoginContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const deleteAccount = () => {
-    const res = confirm("Are you sure you want to delete your account?");
-    if (res) {
-      deleteUserFromLocalStorage(userData.user);
-      deleteUserOnFromCookie();
-      dispatchUserData(logoutAction());
-      navigate("/home");
-    }
+    deleteUserFromLocalStorage(userData.user);
+    deleteUserOnFromCookie();
+    dispatchUserData(logoutAction());
+    navigate("/home");
   };
 
   const openModal = () => {
@@ -33,6 +32,14 @@ export default function Account() {
     setIsModalOpen(false);
   };
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  }
+
   return (
     <div className="userdetails-main">
       <div className="userdetails-container">
@@ -41,12 +48,13 @@ export default function Account() {
             <h3>Full name: {userData.user.fullname}</h3>
             <div className="controls">
               {!userData.user.isAdmin && (
-                <button className="delete" onClick={() => deleteAccount()}>
+                <button className="delete" onClick={() => openDeleteModal()}>
                   Delete account
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               )}
-              <button className="edit" onClick={() => openModal()}>Edit details
+              <button className="edit" onClick={() => openModal()}>
+                Edit details
                 <FontAwesomeIcon icon={faPenToSquare} />
               </button>
             </div>
@@ -64,6 +72,7 @@ export default function Account() {
         user={userData.user}
         dispatchUserData={dispatchUserData}
       />
+      <DeleteAccountModal isModalOpen={isDeleteModalOpen} closeModal={closeDeleteModal} deleteAccount={deleteAccount} />
     </div>
   );
 }

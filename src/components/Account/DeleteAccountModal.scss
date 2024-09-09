@@ -1,12 +1,11 @@
-.deletebookmodal-container {
+.deleteaccountmodal-container {
     display: none;
     position: absolute;
     background-color: lightgreen;
-    // width: 50%;
-    top: 30%;
-    left: 50vw;
-  //   height: 20rem;
-  padding: 2rem;;
+    min-width: 50%;
+    // left: 50%;
+    height: 16rem;
+    padding: 2rem;;
     border: 2px orangered solid;
     border-radius: 5px;
   
@@ -22,6 +21,7 @@
     .buttons {
       margin-top: 3rem;
       display: flex;
+      justify-content: center;
       gap: 2rem;
       
       button {
