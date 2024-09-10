@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 import "./Book.scss";
 import { BooksContext } from "../../context/BooksContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import { addToCartInLocalStorage, getBookByID } from "../../Utils/LocalStorage";
 import { CartContext } from "../../context/CartContext";
@@ -15,12 +15,16 @@ export default function Book() {
   const [bookData, setBookData] = useState(null);
   const [amount, setAmount] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const id = useParams().id;
 
   useEffect(() => {
     const res = getBookByID(id);
     if (res.isError === false) {
       setBookData(res.bookData);
+    }
+    else if (res.isError) {
+      navigate("/*", {replace: true});
     }
   }, []);
 
