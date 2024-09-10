@@ -30,7 +30,7 @@ export const getUser = (email, password) => {
 
 export const addUser = (newUser) => {
   const users = JSON.parse(localStorage.getItem("users")) || [];
-  if (users.some((user) => user.email === newUser.email)) {
+  if (users.some((user) => (user.email === newUser.email || user.username === newUser.username))) {
     return { isError: true, errorMessage: "User already exists", user: null };
   } else {
     const newUsers = [...users];
