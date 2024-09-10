@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 
 import "./Book.scss";
-import { BooksContext } from "../../context/BooksContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import { addToCartInLocalStorage, getBookByID } from "../../Utils/LocalStorage";
-import { CartContext } from "../../context/CartContext";
 import { addToCartAction, editCart } from "../../actions/loginActions";
 import { saveUserOnCookie } from "../../Utils/cookies";
 import BookModal from "./BookModal";

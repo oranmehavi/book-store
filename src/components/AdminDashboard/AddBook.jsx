@@ -82,6 +82,10 @@ export default function AddBook() {
     } else if (!validator.isDecimal(priceInput)) {
       setPriceError("Price must be a decimal");
       updateValidInputs(3, false);
+    }
+    else if (priceInput < 1) {
+      setPriceError("Price cannot be below 1");
+      updateValidInputs(3, false);
     } else {
       setPriceError("");
       updateValidInputs(3, true);

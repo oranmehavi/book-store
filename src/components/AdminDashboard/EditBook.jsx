@@ -110,7 +110,11 @@ export default function EditBook() {
     } else if (!validator.isDecimal(priceInput)) {
       setPriceError("Price must be a decimal");
       updateValidInputs(4, false);
-    } else {
+    } 
+    else if (priceInput < 1) {
+      setPriceError("Price cannot be below 1");
+      updateValidInputs(4, false);
+    }else {
       setPriceError("");
       updateValidInputs(4, true);
       setPrice(parseFloat(priceInput));
@@ -125,7 +129,12 @@ export default function EditBook() {
     } else if (!validator.isInt(discountInput)) {
       setDiscountError("Discount must be an integer");
       updateValidInputs(5, false);
-    } else {
+    }
+    else if (discountInput < 0 || discountInput > 100) {
+      setDiscountError("Discount must be between 0 and 100");
+      updateValidInputs(5, false);
+    }
+    else {
       setDiscountError("");
       updateValidInputs(5, true);
       setDiscount(parseFloat(discountInput));
@@ -218,6 +227,9 @@ export default function EditBook() {
                 name="price"
                 onChange={onPriceBlur}
               />
+              {!validInputs[4] && (
+                <h3 className="invalid-message">{priceError}</h3>
+              )}
             </div>
 
             <div className="section">
@@ -229,10 +241,10 @@ export default function EditBook() {
                 defaultValue={booksState.books[index].discount}
                 onChange={onDiscountBlur}
               />
+              {!validInputs[5] && (
+                <h3 className="invalid-message">{discountError}</h3>
+              )}
             </div>
-            {!validInputs[1] && (
-              <h3 className="invalid-message">{discountError}</h3>
-            )}
             <div className="buttons">
               <button disabled={isFormInvalid()}>Save changes</button>
               <button type="button" onClick={() => {navigate(-1)}}>

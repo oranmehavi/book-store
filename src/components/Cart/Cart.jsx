@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { CartContext } from "../../context/CartContext";
 import "./Cart.scss";
 import {
   clearCart,
@@ -16,7 +15,6 @@ import CartModal from "./CartModal";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-  // const { cartState, cartDispatch } = useContext(CartContext);
   const { userData, dispatchUserData } = useContext(LoginContext);
   const [booksList, setBooksList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -105,7 +103,6 @@ export default function Cart() {
     if (!res.isError) {
       dispatchUserData(clearCartAction());
       saveUserOnCookie(res.newUserData);
-      navigate("/home")
     }
   };
   
@@ -154,7 +151,7 @@ export default function Cart() {
               </div>
             ))}
         </div>
-        <CartModal isModalOpen={isModalOpen} closeModal={closeModal} buy={buy}/>
+        <CartModal isModalOpen={isModalOpen} closeModal={closeModal} buy={buy} navigate={navigate}/>
       </div>
       <div className="total-price">
         <h3 className="total">

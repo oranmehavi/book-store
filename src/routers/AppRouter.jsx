@@ -10,7 +10,6 @@ import BooksContextProvider from "../context/BooksContext";
 import Book from "../components/Book/Book";
 import AddBook from "../components/AdminDashboard/AddBook";
 import EditBook from "../components/AdminDashboard/EditBook";
-import CartContextProvider from "../context/CartContext";
 import Cart from "../components/Cart/Cart";
 import Account from "../components/Account/Account";
 import AdminRoute from "./AdminRoute";

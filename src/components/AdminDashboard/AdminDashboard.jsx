@@ -1,13 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./AdminDashboard.scss";
 import { BooksContext } from "../../context/BooksContext";
-import BooksTable from "./BooksTable";
 import { useNavigate } from "react-router-dom";
 import ScrollableTableContainer from "./ScrollableTableContainer";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import SearchBooks from "../MainPage/SearchBooks";
 import "./TableSearchInput.scss";
 import TableSearchInput from "./TableSearchInput";
 export default function AdminDashboard() {
@@ -17,9 +15,9 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(9);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (booksState.books) setShownBooks(booksState.books);
+  
+  useEffect(() => { 
+      setShownBooks(booksState.books);
   }, [booksState.books]);
 
   useEffect(() => {
