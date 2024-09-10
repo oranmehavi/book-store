@@ -23,7 +23,8 @@
     display: flex;
     gap: 2rem;
 
-    button {
+    button,
+    .bought {
       min-height: 2rem;
       padding: 0.5rem 2rem;
       background-color: blue;
@@ -32,5 +33,16 @@
       border-radius: 5px;
       cursor: pointer;
     }
+  }
+
+  .bought {
+    min-height: 2rem;
+    padding: 0.5rem 2rem;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 1rem;;
+    cursor: pointer;
   }
 }

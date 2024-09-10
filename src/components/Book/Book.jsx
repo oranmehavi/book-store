@@ -47,7 +47,7 @@ export default function Book() {
       dispatchUserData(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
       saveUserOnCookie(res.newUserData);
     }
-    closeModal();
+    // closeModal();
   };
   
   const openModal = () => {
