@@ -244,3 +244,5 @@ export const initialBooks = [
 
   }
 ];
+
+console.log(initialBooks.length);

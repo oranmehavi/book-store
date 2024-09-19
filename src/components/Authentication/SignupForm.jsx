@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { loginAction } from "../../actions/loginActions";
 import { nanoid } from "nanoid";
 import { saveUserOnCookie } from "../../Utils/cookies";
+import { signup } from "../../server/auth";
+import { saveTokenInSessionStorage } from "../../Utils/SessionStorage";
 
 export default function SignupForm(props) {
   const {dispatchUserData} = useContext(LoginContext);
@@ -130,16 +132,24 @@ export default function SignupForm(props) {
     e.preventDefault();
     const formData =Object.fromEntries(new FormData(e.target).entries());
     const {confirmPassword, ...user} = formData;
-    const res = addUser({...user, id: nanoid(), isAdmin: false, cart: []});
-    if (res.isError) {
-      setSignupError(res.errorMessage);
-    }
-    else {
+    // const res = addUser({...user, id: nanoid(), isAdmin: false, cart: []});
+    // if (res.isError) {
+    //   setSignupError(res.errorMessage);
+    // }
+    // else {
+    //   setSignupError("");
+    //   dispatchUserData(loginAction(res.user));
+    //   saveUserOnCookie({user: res.user})
+    //   navigate("/home");
+    // }
+    signup(user).then((res) => {
       setSignupError("");
       dispatchUserData(loginAction(res.user));
-      saveUserOnCookie({user: res.user})
+      saveTokenInSessionStorage(res.token);
       navigate("/home");
-    }
+    }).catch(() => {
+      setSignupError("email or password already exist")
+    });
   };
 
   return (

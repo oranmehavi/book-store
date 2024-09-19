@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import { loginAction } from "../../actions/loginActions";
 import { saveUserOnCookie } from "../../Utils/cookies";
+import { login } from "../../server/auth";
+import { saveTokenInSessionStorage } from "../../Utils/SessionStorage";
 export default function LoginForm(props) {
   const { dispatchUserData } = useContext(LoginContext);
   const [email, setEmail] = useState("");
@@ -55,15 +57,24 @@ export default function LoginForm(props) {
     e.preventDefault();
     console.log;
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    const res = getUser(formData.email, formData.password);
-    if (res.isError) {
-      setLoginError("Invalid username or password");
-    } else {
+
+    login({...formData}).then((res) => {
       setLoginError("");
       dispatchUserData(loginAction(res.user));
-      saveUserOnCookie({ user: res.user });
+      saveTokenInSessionStorage(res.token);
       navigate("/home");
-    }
+    }).catch(() => {
+      setLoginError("Invalid username or password");
+    })
+    // const res = getUser(formData.email, formData.password);
+    // if (res.isError) {
+    //   setLoginError("Invalid username or password");
+    // } else {
+    //   setLoginError("");
+    //   dispatchUserData(loginAction(res.user));
+    //   saveUserOnCookie({ user: res.user });
+    //   navigate("/home");
+    // }
   };
   return (
     <div className="authentication-form">
