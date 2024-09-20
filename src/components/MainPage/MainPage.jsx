@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 import SearchBooks from "./SearchBooks";
 import "./SearchBooks.scss";
+import { getBooksFromServer } from "../../server/books";
 
 export default function MainPage() {
   const { booksState, booksDispatch } = useContext(BooksContext);
   const [shownBooks, setShownBooks] = useState([]);
+  const [totalBooksCount, setTotalBooksCount] = useState(0);
   const [currentBooksInPage, setCurrentBooksInPage] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(9);
@@ -20,14 +22,34 @@ export default function MainPage() {
   const navigate = useNavigate();
   // const [booksState, booksDispatch] = useReducer(booksReducer, []);
 
-  useEffect(() => {
-    if (booksState.books) setShownBooks([...booksState.books]);
-  }, [booksState.books]);
 
   useEffect(() => {
-    const indexOfLastBook = currentPage * booksPerPage;
-    const indexOfFirstBook = indexOfLastBook - booksPerPage;
-    setCurrentBooksInPage(shownBooks.slice(indexOfFirstBook, indexOfLastBook));
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksFromServer(undefined, 1, signal).then(res => {
+      setShownBooks([...res.books])
+      setTotalBooksCount(res.length)
+    })
+
+    return () => {
+      controller.abort();
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (booksState.books) setShownBooks([...booksState.books]);
+  // }, [booksState.books]);
+
+  useEffect(() => {
+    // const indexOfLastBook = currentPage * booksPerPage;
+    // const indexOfFirstBook = indexOfLastBook - booksPerPage;
+    // setCurrentBooksInPage(shownBooks.slice(indexOfFirstBook, indexOfLastBook));
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksFromServer(undefined, currentPage, signal).then(res => {
+      setShownBooks([...res.books])
+      setTotalBooksCount(res.length)
+    })
   }, [shownBooks, currentPage, booksPerPage]);
 
   const navigateToBookPage = (id) => {
@@ -54,7 +76,7 @@ export default function MainPage() {
       <SearchBooks searchBooks={searchBooks} />
       <div className="mainpage-container">
         <div className="books-container">
-          {currentBooksInPage?.map((book, index) => (
+          {shownBooks?.map((book, index) => (
             <div
               key={book.id}
               className="book"
@@ -88,10 +110,10 @@ export default function MainPage() {
         
       </div>
       <div>
-          {shownBooks?.length > booksPerPage && (
+          
             <div className="pagination">
               {Array.from({
-                length: Math.ceil(shownBooks.length / booksPerPage),
+                length: Math.ceil(totalBooksCount / booksPerPage),
               }).map((_, index) => (
                 <div key={index}>
                   <button onClick={() => paginate(index + 1)} className={index + 1 === currentPage ? "selected" : ""}>
@@ -100,7 +122,7 @@ export default function MainPage() {
                 </div>
               ))}
             </div>
-          )}
+        
         </div>
     </>
   );
