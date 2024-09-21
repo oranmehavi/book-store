@@ -7,29 +7,34 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DeleteBookModal from "./DeleteBookModal";
+import { deleteBookServer } from "../../server/books";
 
-export default function BooksTable({ books, booksDispatch }) {
+export default function BooksTable({ books, booksDispatch, updateBooks }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [currentBookId, setCurrentBookId] = useState(0);
 
   const navigateToBookEdit = (index) => {
     navigate(`/dashboard/editbook/${index}`);
   };
 
-  const deleteBook = (index) => {
-      deleteBookFromLocalStorage(index);
-      booksDispatch(removeBookAction(index));
-      closeModal();
+  const deleteBook = (id) => {
+    // deleteBookFromLocalStorage(index);
+    // booksDispatch(removeBookAction(index));
+    deleteBookServer(id).then(() => {
+      updateBooks();
+    });
+    closeModal();
   };
 
-  const openModal = (index) => {
-    setCurrentBookIndex(index);
+  const openModal = (id) => {
+    setCurrentBookId(id);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    navigate("/dashboard");
   };
 
   return (
@@ -50,7 +55,7 @@ export default function BooksTable({ books, booksDispatch }) {
           {books.map((book, index) => (
             <tr key={book.id}>
               <td>
-                <span className="cell-header">Book ID:</span> {book.id}
+                <span className="cell-header">Book ID:</span> {book._id}
               </td>
               <td>
                 <span className="cell-header">Book name:</span> {book.bookName}
@@ -82,12 +87,15 @@ export default function BooksTable({ books, booksDispatch }) {
                 <div className="buttons">
                   <button
                     className="edit"
-                    onClick={() => navigateToBookEdit(index)}
+                    onClick={() => navigateToBookEdit(book._id)}
                   >
                     Edit book
                     <FontAwesomeIcon icon={faPenToSquare} />
                   </button>
-                  <button className="delete" onClick={() => openModal(index)}>
+                  <button
+                    className="delete"
+                    onClick={() => openModal(book._id)}
+                  >
                     Delete book
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
@@ -98,7 +106,12 @@ export default function BooksTable({ books, booksDispatch }) {
         </tbody>
       </table>
 
-      <DeleteBookModal isModalOpen={isModalOpen} closeModal={closeModal} currentBookIndex={currentBookIndex} deleteBook={deleteBook}/>
+      <DeleteBookModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        currentBookId={currentBookId}
+        deleteBook={deleteBook}
+      />
     </>
   );
 }

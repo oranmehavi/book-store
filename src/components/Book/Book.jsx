@@ -7,6 +7,7 @@ import { addToCartInLocalStorage, getBookByID } from "../../Utils/LocalStorage";
 import { addToCartAction, editCart } from "../../actions/loginActions";
 import { saveUserOnCookie } from "../../Utils/cookies";
 import BookModal from "./BookModal";
+import { getBookByIDFromServer } from "../../server/books";
 
 export default function Book() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -15,14 +16,27 @@ export default function Book() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const id = useParams().id;
-
+  
   useEffect(() => {
-    const res = getBookByID(id);
-    if (res.isError === false) {
-      setBookData(res.bookData);
-    }
-    else if (res.isError) {
-      navigate("/*", {replace: true});
+    // const res = getBookByID(id);
+    // if (res.isError === false) {
+    //   setBookData(res.bookData);
+    // }
+    // else if (res.isError) {
+    //   navigate("/*", {replace: true});
+    // }
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBookByIDFromServer(id, signal).then((res) => {
+      console.log(res);
+      setBookData(res.book);
+    }).catch((res) => {
+      if (res.status === 404)
+        navigate("/*", {replace: true});
+    })
+
+    return () => {
+      controller.abort();
     }
   }, []);
 
@@ -57,30 +71,30 @@ export default function Book() {
   }
   return (
     <>
-      {bookData?.book && (
+      {bookData && (
         <div className="book-container">
           <div className="details-and-purchase">
-            <p>{bookData.book.summary}</p>
+            <p>{bookData.summary}</p>
             <div className="purchase-section">
               <div className="purchase-money">
                 <button className="purchase-button" onClick={() => openModal()} disabled={!userData.user || (!!userData.user && userData.user.isAdmin)}>Add to cart!</button>
                 <h4>
                   {!!userData.user
                     ? (
-                        bookData.book.priceAfterDiscount
+                        bookData.priceAfterDiscount
                       ).toLocaleString("he-IL", {
                         style: "currency",
                         currency: "ILS",
                       })
-                    : bookData.book.price.toLocaleString("he-IL", {
+                    : bookData.price.toLocaleString("he-IL", {
                         style: "currency",
                         currency: "ILS",
                       })}
                 </h4>
                 <h5 className="price-before">
                   {!!userData.user &&
-                    bookData.book.discount > 0 &&
-                    bookData.book.price.toLocaleString("he-IL", {
+                    bookData.discount > 0 &&
+                    bookData.price.toLocaleString("he-IL", {
                       style: "currency",
                       currency: "ILS",
                     })}
@@ -94,7 +108,7 @@ export default function Book() {
             </div>
           </div>
 
-          <img src={bookData.book.image} alt="" />
+          <img src={bookData.image} alt="" />
           <BookModal isModalOpen={isModalOpen} amount={amount} closeModal={closeModal} addToCart={addToCart}/>
         </div>
       )}

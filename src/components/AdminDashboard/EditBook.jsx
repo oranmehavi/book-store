@@ -6,9 +6,11 @@ import "./EditBook.scss";
 import validator from "validator";
 import { editBookInLocalStorage } from "../../Utils/LocalStorage";
 import { editBookAction } from "../../actions/booksAction";
+import { editBookServer, getBookByIDFromServer } from "../../server/books";
 
 export default function EditBook() {
   const { booksState, booksDispatch } = useContext(BooksContext);
+  const [bookData, setBookData] = useState(null);
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
   const [summary, setSummary] = useState("");
@@ -30,16 +32,27 @@ export default function EditBook() {
     true,
   ]);
   const navigate = useNavigate();
-  const index = useParams().index;
+  const id = useParams().id;
 
   useEffect(() => {
-    if (booksState.books) {
-      setBookName(booksState.books[index].bookName);
-      setAuthor(booksState.books[index].author);
-      setSummary(booksState.books[index].summary);
-      setPrice(booksState.books[index].price);
-      setDiscount(booksState.books[index].discount);
-    }
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBookByIDFromServer(id, signal)
+      .then((res) => {
+        setBookData(res.book);
+        setBookName(res.book.bookName);
+        setAuthor(res.book.author);
+        setSummary(res.book.summary);
+        setPrice(res.book.price);
+        setDiscount(res.book.discount);
+      })
+      .catch((res) => {
+        if (res.status === 404) navigate("/*", { replace: true });
+      });
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const isFormInvalid = () => {
@@ -110,11 +123,10 @@ export default function EditBook() {
     } else if (!validator.isDecimal(priceInput)) {
       setPriceError("Price must be a decimal");
       updateValidInputs(4, false);
-    } 
-    else if (priceInput < 1) {
+    } else if (priceInput < 1) {
       setPriceError("Price cannot be below 1");
       updateValidInputs(4, false);
-    }else {
+    } else {
       setPriceError("");
       updateValidInputs(4, true);
       setPrice(parseFloat(priceInput));
@@ -129,12 +141,10 @@ export default function EditBook() {
     } else if (!validator.isInt(discountInput)) {
       setDiscountError("Discount must be an integer");
       updateValidInputs(5, false);
-    }
-    else if (discountInput < 0 || discountInput > 100) {
+    } else if (discountInput < 0 || discountInput > 100) {
       setDiscountError("Discount must be between 0 and 100");
       updateValidInputs(5, false);
-    }
-    else {
+    } else {
       setDiscountError("");
       updateValidInputs(5, true);
       setDiscount(parseFloat(discountInput));
@@ -152,28 +162,27 @@ export default function EditBook() {
       summary: formData.summary,
       price: parseFloat(price),
       discount: parseInt(discount),
-      priceAfterDiscount:
-        (parseFloat(price) * (100 - parseInt(discount))) / 100,
     };
-    editBookInLocalStorage(index, changes);
-    booksDispatch(editBookAction(index, changes));
-    navigate("/dashboard");
+
+    editBookServer(id, changes).then(() => {
+      navigate("/dashboard");
+    });
+    
   };
 
   return (
     <div className="editbook-container">
       <div className="editbook-form__container">
-        {booksState.books && (
-          <form className="editbook-form" onSubmit={handleSubmit}>
+          {bookData && <form className="editbook-form" onSubmit={handleSubmit}>
             <div className="title">
-              <img src={booksState.books[index].image} alt="" />
-              <h3>{booksState.books[index].bookName}</h3>
+              <img src={bookData.image} alt="" />
+              <h3>{bookData.bookName}</h3>
             </div>
             <div className="section">
               <label htmlFor="">Book name: </label>
               <input
                 type="text"
-                defaultValue={booksState.books[index].bookName}
+                defaultValue={bookData.bookName}
                 name="bookName"
                 onChange={onBooknameBlur}
               />
@@ -185,7 +194,7 @@ export default function EditBook() {
               <label htmlFor="">Author:</label>
               <input
                 type="text"
-                defaultValue={booksState.books[index].author}
+                defaultValue={bookData.author}
                 name="author"
                 onChange={onAuthorBlur}
               />
@@ -198,7 +207,7 @@ export default function EditBook() {
               <label htmlFor="">Image:</label>
               <input
                 type="text"
-                defaultValue={booksState.books[index].image}
+                defaultValue={bookData.image}
                 name="image"
                 onChange={onUrlBlur}
               />
@@ -211,7 +220,7 @@ export default function EditBook() {
               <label htmlFor="">Summary:</label>
               <textarea
                 type="text"
-                defaultValue={booksState.books[index].summary}
+                defaultValue={bookData.summary}
                 name="summary"
                 onChange={onSummaryBlur}
               />
@@ -223,7 +232,7 @@ export default function EditBook() {
               <label htmlFor="">Price:</label>
               <input
                 type="text"
-                defaultValue={booksState.books[index].price}
+                defaultValue={bookData.price}
                 name="price"
                 onChange={onPriceBlur}
               />
@@ -238,7 +247,7 @@ export default function EditBook() {
                 type="text"
                 placeholder="Discount"
                 name="discount"
-                defaultValue={booksState.books[index].discount}
+                defaultValue={bookData.discount}
                 onChange={onDiscountBlur}
               />
               {!validInputs[5] && (
@@ -247,12 +256,16 @@ export default function EditBook() {
             </div>
             <div className="buttons">
               <button disabled={isFormInvalid()}>Save changes</button>
-              <button type="button" onClick={() => {navigate(-1)}}>
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(-1);
+                }}
+              >
                 Cancel
               </button>
             </div>
-          </form>
-        )}
+          </form>}
       </div>
     </div>
   );

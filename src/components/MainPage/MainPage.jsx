@@ -15,6 +15,7 @@ export default function MainPage() {
   const { booksState, booksDispatch } = useContext(BooksContext);
   const [shownBooks, setShownBooks] = useState([]);
   const [totalBooksCount, setTotalBooksCount] = useState(0);
+  const [searchValue, setSearchValue] = useState("");
   const [currentBooksInPage, setCurrentBooksInPage] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(9);
@@ -26,7 +27,7 @@ export default function MainPage() {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    getBooksFromServer(undefined, 1, signal).then(res => {
+    getBooksFromServer(searchValue, 1, signal).then(res => {
       setShownBooks([...res.books])
       setTotalBooksCount(res.length)
     })
@@ -46,25 +47,26 @@ export default function MainPage() {
     // setCurrentBooksInPage(shownBooks.slice(indexOfFirstBook, indexOfLastBook));
     const controller = new AbortController();
     const signal = controller.signal;
-    getBooksFromServer(undefined, currentPage, signal).then(res => {
+    getBooksFromServer(searchValue, currentPage, signal).then(res => {
       setShownBooks([...res.books])
       setTotalBooksCount(res.length)
     })
-  }, [shownBooks, currentPage, booksPerPage]);
+  }, [currentPage, searchValue]);
 
   const navigateToBookPage = (id) => {
     navigate(`/book/${id}`);
   };
 
   const searchBooks = (searchValue) => {
-    const books = [...booksState.books];
-    setShownBooks(
-      searchValue === ""
-        ? books
-        : books.filter((book) =>
-            book.bookName.toLowerCase().includes(searchValue)
-          )
-    );
+    // const books = [...booksState.books];
+    // setShownBooks(
+    //   searchValue === ""
+    //     ? books
+    //     : books.filter((book) =>
+    //         book.bookName.toLowerCase().includes(searchValue)
+    //       )
+    // );
+    setSearchValue(searchValue);
     setCurrentPage(1);
   };
 
@@ -80,7 +82,7 @@ export default function MainPage() {
             <div
               key={book.id}
               className="book"
-              onClick={() => navigateToBookPage(book.id)}
+              onClick={() => navigateToBookPage(book._id)}
             >
               <img src={book.image} alt="" />
               <h4>{book.bookName}</h4>

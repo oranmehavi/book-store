@@ -53,7 +53,7 @@ export default function AppRouter() {
                 }
               />
               <Route
-                path="/dashboard/editbook/:index"
+                path="/dashboard/editbook/:id"
                 element={
                   <AdminRoute>
                     <EditBook />

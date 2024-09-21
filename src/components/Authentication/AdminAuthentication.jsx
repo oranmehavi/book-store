@@ -5,6 +5,8 @@ import { loginAction } from "../../actions/loginActions";
 import { getUser } from "../../Utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
 import { saveUserOnCookie } from "../../Utils/cookies";
+import { login } from "../../server/auth";
+import { saveTokenInSessionStorage } from "../../Utils/SessionStorage";
 
 export default function AdminAuthentication() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -51,22 +53,18 @@ export default function AdminAuthentication() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    console.log(formData);
-    const res = getUser(formData.email, formData.password);
-    if (!res.isError) {
+    
+    login({...formData}).then((res) => {
+      console.log(res.user);
       if (res.user.isAdmin) {
         setLoginError("");
         dispatchUserData(loginAction(res.user));
-        saveUserOnCookie({ user: res.user });
+        saveTokenInSessionStorage(res.token);
         navigate("/dashboard");
       }
-      else {
-        setLoginError("No permission");
-      }
-    }
-    else {
+    }).catch(() => {
       setLoginError(res.errorMessage);
-    }
+    })
   };
 
   return (

@@ -8,38 +8,76 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./TableSearchInput.scss";
 import TableSearchInput from "./TableSearchInput";
+import { getBooksFromServer } from "../../server/books";
 export default function AdminDashboard() {
   const { booksState, booksDispatch } = useContext(BooksContext);
   const [shownBooks, setShownBooks] = useState([]);
   const [currentBooksInPage, setCurrentBooksInPage] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [totalBooksCount, setTotalBooksCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(9);
   const navigate = useNavigate();
-  
-  useEffect(() => { 
-      setShownBooks(booksState.books);
-  }, [booksState.books]);
 
   useEffect(() => {
-    const indexOfLastBook = currentPage * booksPerPage;
-    const indexOfFirstBook = indexOfLastBook - booksPerPage;
-    setCurrentBooksInPage(shownBooks.slice(indexOfFirstBook, indexOfLastBook));
-  }, [shownBooks, currentPage, booksPerPage]);
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksFromServer(searchValue, 1, signal).then((res) => {
+      setShownBooks([...res.books]);
+      setTotalBooksCount(res.length);
+    });
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    // const indexOfLastBook = currentPage * booksPerPage;
+    // const indexOfFirstBook = indexOfLastBook - booksPerPage;
+    // setCurrentBooksInPage(shownBooks.slice(indexOfFirstBook, indexOfLastBook));
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksFromServer(searchValue, currentPage, signal)
+      .then((res) => {
+        setShownBooks([...res.books]);
+        setTotalBooksCount(res.length);
+      })
+      .catch(() => {
+        setShownBooks([]);
+        setTotalBooksCount(0);
+      });
+  }, [currentPage, searchValue]);
 
   const searchBooks = (searchValue) => {
-    const books = [...booksState.books];
-    setShownBooks(
-      searchValue === ""
-        ? books
-        : books.filter((book) =>
-            book.bookName.toLowerCase().includes(searchValue)
-          )
-    );
+    // const books = [...booksState.books];
+    // setShownBooks(
+    //   searchValue === ""
+    //     ? books
+    //     : books.filter((book) =>
+    //         book.bookName.toLowerCase().includes(searchValue)
+    //       )
+    // );
+    setSearchValue(searchValue);
     setCurrentPage(1);
   };
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const updateBooks = () => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksFromServer(searchValue, currentPage, signal)
+      .then((res) => {
+        setShownBooks([...res.books]);
+        setTotalBooksCount(res.length);
+      })
+      .catch(() => {
+        setShownBooks([]);
+        setTotalBooksCount(0);
+      });
   };
 
   return (
@@ -59,30 +97,29 @@ export default function AdminDashboard() {
         <div className="bookslist-container">
           {booksState.books && (
             <ScrollableTableContainer
-              books={currentBooksInPage}
+              books={shownBooks}
               booksDispatch={booksDispatch}
+              updateBooks={updateBooks}
             />
           )}
-        </div>    
+        </div>
       </div>
       <div>
-          {shownBooks?.length > booksPerPage && (
-            <div className="table-pagination">
-              {Array.from({
-                length: Math.ceil(shownBooks.length / booksPerPage),
-              }).map((_, index) => (
-                <div key={index}>
-                  <button
-                    onClick={() => paginate(index + 1)}
-                    className={index + 1 === currentPage ? "selected" : ""}
-                  >
-                    {index + 1}
-                  </button>
-                </div>
-              ))}
+        <div className="table-pagination">
+          {Array.from({
+            length: Math.ceil(totalBooksCount / booksPerPage),
+          }).map((_, index) => (
+            <div key={index}>
+              <button
+                onClick={() => paginate(index + 1)}
+                className={index + 1 === currentPage ? "selected" : ""}
+              >
+                {index + 1}
+              </button>
             </div>
-          )}
+          ))}
         </div>
+      </div>
     </>
   );
 }

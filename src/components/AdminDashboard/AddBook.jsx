@@ -6,6 +6,7 @@ import { BooksContext } from "../../context/BooksContext";
 import { addBookAction } from "../../actions/booksAction";
 import { nanoid } from "nanoid";
 import { useNavigate } from "react-router-dom";
+import { addBookServer } from "../../server/books";
 
 export default function AddBook() {
   const { booksDispatch } = useContext(BooksContext);
@@ -14,17 +15,20 @@ export default function AddBook() {
   const [summary, setSummary] = useState("");
   const [price, setPrice] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
+  const [discount, setDiscount] = useState("");
   const [booknameError, setBooknameError] = useState("");
   const [authorError, setAuthorError] = useState("");
   const [summaryError, setSummaryError] = useState("");
   const [priceError, setPriceError] = useState("");
   const [imageUrlError, setImageUrlError] = useState("");
+  const [discountError, setDiscountError] = useState("");
   const [validInputs, setValidInputs] = useState([
     false,
     false,
     false,
     false,
     false,
+    false
   ]);
   const [addBookError, setAddBookError] = useState("");
   const navigate = useNavigate();
@@ -108,24 +112,50 @@ export default function AddBook() {
     }
   };
 
+  const onDiscountBlur = (e) => {
+    const discountInput = e.target.value.trim();
+    if (discountInput === "") {
+      setDiscountError("Discount cannot be empty");
+      updateValidInputs(5, false);
+    } else if (!validator.isInt(discountInput)) {
+      setDiscountError("Discount must be an integer");
+      updateValidInputs(5, false);
+    }
+    else if (discountInput < 0 || discountInput > 100) {
+      setDiscountError("Discount must be between 0 and 100");
+      updateValidInputs(5, false);
+    }
+    else {
+      setDiscountError("");
+      updateValidInputs(5, true);
+      setDiscount(parseFloat(discountInput));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
     const book = {
       ...formData,
-      discont: 0,
       price: parseFloat(price),
-      id: nanoid(),
-      priceAfterDiscount: parseFloat(price),
+      discount: parseFloat(discount)
     };
-    const res = addBook(book);
-    if (res.isError) {
-      setAddBookError(res.errorMessage);
-    } else {
+
+    addBookServer(book).then(() => {
       setAddBookError("");
-      booksDispatch(addBookAction(res.book));
       navigate("/dashboard");
-    }
+    }).catch((error) =>{
+      console.log(error)
+      setAddBookError(error.statusText);
+    })
+    // const res = addBook(book);
+    // if (res.isError) {
+    //   setAddBookError(res.errorMessage);
+    // } else {
+    //   setAddBookError("");
+    //   booksDispatch(addBookAction(res.book));
+    //   navigate("/dashboard");
+    // }
   };
 
   return (
@@ -174,6 +204,15 @@ export default function AddBook() {
           />
           {!validInputs[4] && (
             <h3 className="invalid-message">{imageUrlError}</h3>
+          )}
+          <input
+            type="text"
+            placeholder="Discount"
+            name="discount"
+            onChange={onDiscountBlur}
+          />
+          {!validInputs[5] && (
+            <h3 className="invalid-message">{discountError}</h3>
           )}
           {addBookError !== "" && (
             <div className="error-message">{addBookError}</div>
