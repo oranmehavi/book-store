@@ -10,6 +10,8 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DeleteAccountModal from "./DeleteAccountModal";
+import { deleteUser } from "../../server/auth";
+import { deleteTokenFromSessionStorage } from "../../Utils/SessionStorage";
 
 export default function Account() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -18,10 +20,17 @@ export default function Account() {
   const navigate = useNavigate();
 
   const deleteAccount = () => {
-    deleteUserFromLocalStorage(userData.user);
-    deleteUserOnFromCookie();
-    dispatchUserData(logoutAction());
-    navigate("/home");
+    deleteUser().then(() => {
+      deleteTokenFromSessionStorage();
+      dispatchUserData(logoutAction());
+      navigate("/home");
+    }).catch(() => {
+      alert("not logged in");
+    })
+    // deleteUserFromLocalStorage(userData.user);
+    // deleteUserOnFromCookie();
+    // dispatchUserData(logoutAction());
+    // navigate("/home");
   };
 
   const openModal = () => {

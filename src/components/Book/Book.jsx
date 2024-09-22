@@ -8,6 +8,7 @@ import { addToCartAction, editCart } from "../../actions/loginActions";
 import { saveUserOnCookie } from "../../Utils/cookies";
 import BookModal from "./BookModal";
 import { getBookByIDFromServer } from "../../server/books";
+import { addToCartServer } from "../../server/auth";
 
 export default function Book() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -49,16 +50,24 @@ export default function Book() {
   };
 
   const addToCart = () => {
-    const res = addToCartInLocalStorage(userData, {id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount});
-    console.log(res);
-    if (!res.isNew) {
-      dispatchUserData(editCart(res.index, res.newQuantity));
-      saveUserOnCookie(res.newUserData);
-    }
-    else {
-      dispatchUserData(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
-      saveUserOnCookie(res.newUserData);
-    }
+    // const res = addToCartInLocalStorage(userData, {id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount});
+    // console.log(res);
+    // if (!res.isNew) {
+    //   dispatchUserData(editCart(res.index, res.newQuantity));
+    //   saveUserOnCookie(res.newUserData);
+    // }
+    // else {
+    //   dispatchUserData(addToCartAction({id, bookName: bookData.book.bookName, image: bookData.book.image, quantity: amount}));
+    //   saveUserOnCookie(res.newUserData);
+    // }
+    addToCartServer({book: id, quantity: amount}).then((res => {
+      if (!res.isNew) {
+        dispatchUserData(editCart(res.index, res.newQuantity));
+      }
+      else {
+        dispatchUserData(addToCartAction({book: id, quantity: amount}));
+      }
+    })).catch(() => alert("failed adding to cart"));
     // closeModal();
   };
   

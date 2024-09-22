@@ -3,17 +3,18 @@ import "./EditUserModal.scss";
 import validator from "validator";
 import { editUserAction } from "../../actions/loginActions";
 import { editUserInLocalStorage } from "../../Utils/LocalStorage";
+import { editUserServer } from "../../server/auth";
 
 export default function EditUserModal({ user, dispatchUserData, isModalOpen, closeModal}) {
   const [fullName, setFullName] = useState(user.fullname);
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState(user.password);
+  const [newPassword, setNewPassword] = useState("");
   const [fullNameError, setFullNameError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [validInputs, setValidInputs] = useState([true, true, true, true]);
+  const [validInputs, setValidInputs] = useState([true, true, true]);
 
   const isFormInvalid = () => {
     return validInputs.some((inputState) => inputState === false);
@@ -68,13 +69,8 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
 
   const onPasswordBlur = (e) => {
     const passwordInput = e.target.value.trim();
-    if (passwordInput === "") {
-      setPasswordError("Password should not be empty");
-      updateValidInputs(3, false);
-    } else {
-      setPassword(passwordInput);
-      setPasswordError("");
-      updateValidInputs(3, true);
+      if (passwordInput !== "") {
+      setNewPassword(passwordInput);
     }
   };
 
@@ -82,10 +78,17 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
     const newUserData = {...user, ...formData};
-    dispatchUserData(editUserAction(newUserData));
-    editUserInLocalStorage(newUserData);
-    closeModal();
+    if (newUserData.password === "")
+      delete newUserData.password;
+    
+    editUserServer(newUserData).then((res) => {
+      dispatchUserData(editUserAction(newUserData));
+      closeModal();
+    }).catch(() => {
+      alert("error editing the user");
+    })
   };
+
   return (
     <div className={isModalOpen ? "modal-container open" : "modal-container"}>
       <div className="modal-form__container">
@@ -106,7 +109,7 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
             )}
             <input
               type="password"
-              placeholder="Password"
+              placeholder="New password"
               defaultValue={user.password}
               onChange={onPasswordBlur}
               name="password"

@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { saveUserOnCookie } from "../../Utils/cookies";
 import CartModal from "./CartModal";
 import { useNavigate } from "react-router-dom";
+import { getBooksDataFromCartServer, removeFromCartServer } from "../../server/auth";
 
 export default function Cart() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -23,24 +24,33 @@ export default function Cart() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userData.user?.cart)
-      setBooksList(
-        getListOfBooksByIds(userData.user.cart.map((item) => item.id))
-      );
-  }, [userData.user?.cart]);
+    // if (userData.user?.cart)
+    //   setBooksList(
+    //     getListOfBooksByIds(userData.user.cart.map((item) => item.id))
+    //   );
+    const controller = new AbortController();
+    const signal = controller.signal;
+    getBooksDataFromCartServer(signal).then((res) => {
+      setBooksList(res.books);
+    })
+
+    return () => {
+      controller.abort();
+    }
+  }, []);
 
   useEffect(() => {
     calculateTotals(booksList, userData.user?.cart);
-  }, [booksList]);
+  }, [booksList, userData.user?.cart]);
 
   const calculateTotals = (booksList, cart) => {
     let totalPriceAfterDiscountF = 0;
     let totalPriceF = 0;
     if (booksList.length > 0) {
       for (const [index, item] of cart.entries()) {
-        totalPriceF += item.quantity * booksList[index].book.price;
+        totalPriceF += item.quantity * booksList[index].price;
         totalPriceAfterDiscountF +=
-          item.quantity * booksList[index].book.priceAfterDiscount;
+          item.quantity * booksList[index].priceAfterDiscount;
       }
       setTotalPrice(totalPriceF);
       setTotalPriceAfterDiscount(totalPriceAfterDiscountF);
@@ -79,11 +89,14 @@ export default function Cart() {
   };
 
   const remove = (index) => {
-    const res = removeFromCartInLocalStorage(userData, index);
-    if (!res.isError) {
+    // const res = removeFromCartInLocalStorage(userData, index);
+    // if (!res.isError) {
+    //   dispatchUserData(removeFromCart(index));
+    //   saveUserOnCookie(res.newUserData);
+    // }
+    removeFromCartServer(index).then((res) => {
       dispatchUserData(removeFromCart(index));
-      saveUserOnCookie(res.newUserData);
-    }
+    })
   };
 
   const isCartEmpty = () => {
@@ -113,13 +126,13 @@ export default function Cart() {
           {booksList.length > 0 &&
             userData.user?.cart.map((item, index) => (
               <div className="cart-item">
-                <img src={booksList[index].book.image} alt="" />
-                <h4>{booksList[index].book.bookName}</h4>
+                <img src={booksList[index].image} alt="" />
+                <h4>{booksList[index].bookName}</h4>
                 <h5 className="price-before">
                   {!!userData.user &&
-                    booksList[index].book.discount > 0 &&
+                    booksList[index].discount > 0 &&
                     (
-                      booksList[index].book.price * item.quantity
+                      booksList[index].price * item.quantity
                     ).toLocaleString("he-IL", {
                       style: "currency",
                       currency: "ILS",
@@ -128,13 +141,13 @@ export default function Cart() {
                 <h4>
                   {!!userData.user
                     ? (
-                        booksList[index].book.priceAfterDiscount * item.quantity
+                        booksList[index].priceAfterDiscount * item.quantity
                       ).toLocaleString("he-IL", {
                         style: "currency",
                         currency: "ILS",
                       })
                     : (
-                        booksList[index].book.price * item.quantity
+                        booksList[index].price * item.quantity
                       ).toLocaleString("he-IL", {
                         style: "currency",
                         currency: "ILS",
