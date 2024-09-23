@@ -31,6 +31,7 @@ export default function EditBook() {
     true,
     true,
   ]);
+  const [editBookError, setEditBookError] = useState("");
   const navigate = useNavigate();
   const id = useParams().id;
 
@@ -164,16 +165,20 @@ export default function EditBook() {
       discount: parseInt(discount),
     };
 
-    editBookServer(id, changes).then(() => {
-      navigate("/dashboard");
-    });
-    
+    editBookServer(id, changes)
+      .then(() => {
+        navigate("/dashboard");
+      })
+      .catch((res) => {
+        if (res.status === 400) setEditBookError("Invalid input");
+      });
   };
 
   return (
     <div className="editbook-container">
       <div className="editbook-form__container">
-          {bookData && <form className="editbook-form" onSubmit={handleSubmit}>
+        {bookData && (
+          <form className="editbook-form" onSubmit={handleSubmit}>
             <div className="title">
               <img src={bookData.image} alt="" />
               <h3>{bookData.bookName}</h3>
@@ -254,6 +259,9 @@ export default function EditBook() {
                 <h3 className="invalid-message">{discountError}</h3>
               )}
             </div>
+            {editBookError !== "" && (
+              <div className="error-message">{editBookError}</div>
+            )}
             <div className="buttons">
               <button disabled={isFormInvalid()}>Save changes</button>
               <button
@@ -265,7 +273,8 @@ export default function EditBook() {
                 Cancel
               </button>
             </div>
-          </form>}
+          </form>
+        )}
       </div>
     </div>
   );

@@ -5,7 +5,12 @@ import { editUserAction } from "../../actions/loginActions";
 import { editUserInLocalStorage } from "../../Utils/LocalStorage";
 import { editUserServer } from "../../server/auth";
 
-export default function EditUserModal({ user, dispatchUserData, isModalOpen, closeModal}) {
+export default function EditUserModal({
+  user,
+  dispatchUserData,
+  isModalOpen,
+  closeModal,
+}) {
   const [fullName, setFullName] = useState(user.fullname);
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
@@ -15,7 +20,7 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [validInputs, setValidInputs] = useState([true, true, true]);
-
+  const [editUserError, setEditUserError] = useState("");
   const isFormInvalid = () => {
     return validInputs.some((inputState) => inputState === false);
   };
@@ -69,7 +74,7 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
 
   const onPasswordBlur = (e) => {
     const passwordInput = e.target.value.trim();
-      if (passwordInput !== "") {
+    if (passwordInput !== "") {
       setNewPassword(passwordInput);
     }
   };
@@ -77,16 +82,17 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    const newUserData = {...user, ...formData};
-    if (newUserData.password === "")
-      delete newUserData.password;
-    
-    editUserServer(newUserData).then((res) => {
-      dispatchUserData(editUserAction(newUserData));
-      closeModal();
-    }).catch(() => {
-      alert("error editing the user");
-    })
+    const newUserData = { ...user, ...formData };
+    if (newUserData.password === "") delete newUserData.password;
+
+    editUserServer(newUserData)
+      .then((res) => {
+        dispatchUserData(editUserAction(newUserData));
+        closeModal();
+      })
+      .catch(() => {
+        setEditUserError("Invalid input");
+      });
   };
 
   return (
@@ -95,15 +101,33 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
         {user && (
           <form className="modal-form" onSubmit={handleSubmit}>
             <h3>Edit details</h3>
-            <input type="text" placeholder="Full name" defaultValue={user.fullname} onChange={onFullNameBlur} name="fullname"/>
+            <input
+              type="text"
+              placeholder="Full name"
+              defaultValue={user.fullname}
+              onChange={onFullNameBlur}
+              name="fullname"
+            />
             {!validInputs[0] && (
               <h4 className="invalid-message">{fullNameError}</h4>
             )}
-            <input type="text" placeholder="Username" defaultValue={user.username} onChange={onUsernameBlur} name="username"/>
+            <input
+              type="text"
+              placeholder="Username"
+              defaultValue={user.username}
+              onChange={onUsernameBlur}
+              name="username"
+            />
             {!validInputs[1] && (
               <h4 className="invalid-message">{usernameError}</h4>
             )}
-            <input type="text" placeholder="Email" defaultValue={user.email} onChange={onEmailBlur} name="email"/>
+            <input
+              type="text"
+              placeholder="Email"
+              defaultValue={user.email}
+              onChange={onEmailBlur}
+              name="email"
+            />
             {!validInputs[2] && (
               <h4 className="invalid-message">{emailError}</h4>
             )}
@@ -117,9 +141,16 @@ export default function EditUserModal({ user, dispatchUserData, isModalOpen, clo
             {!validInputs[3] && (
               <h4 className="invalid-message">{passwordError}</h4>
             )}
+            {editUserError !== "" && (
+              <div className="error-message">{editUserError}</div>
+            )}
             <div className="buttons">
-              <button type="submit" disabled={isFormInvalid()}>Save changes</button>
-              <button type="button" onClick={() => closeModal()}>Close</button>
+              <button type="submit" disabled={isFormInvalid()}>
+                Save changes
+              </button>
+              <button type="button" onClick={() => closeModal()}>
+                Close
+              </button>
             </div>
           </form>
         )}

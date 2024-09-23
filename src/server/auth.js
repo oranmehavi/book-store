@@ -97,9 +97,9 @@ export const editUserServer = async (userData) => {
       body: JSON.stringify(userData),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromSessionStorage()}`
-      }
-    })
+        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+      },
+    });
 
     const responseData = await response.json();
 
@@ -108,10 +108,10 @@ export const editUserServer = async (userData) => {
     }
 
     return {
-      user: responseData.data.user
-    }
-  } catch (error) { 
-    throw error; 
+      user: responseData.data.user,
+    };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -120,17 +120,17 @@ export const deleteUser = async () => {
     const response = await fetch("http://localhost:3000/api/users/delete", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getTokenFromSessionStorage()}`
-      }
-    })
+        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+      },
+    });
 
     if (!response.ok) {
-      throw new Error("not authenticated")
+      throw new Error("not authenticated");
     }
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const addToCartServer = async (item) => {
   try {
@@ -139,9 +139,9 @@ export const addToCartServer = async (item) => {
       body: JSON.stringify(item),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromSessionStorage()}`
-      }
-    })
+        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+      },
+    });
 
     const responseData = await response.json();
 
@@ -153,51 +153,102 @@ export const addToCartServer = async (item) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
-export const getBooksDataFromCartServer = async (signal) => { 
+export const getBooksDataFromCartServer = async (signal) => {
   try {
     const response = await fetch("http://localhost:3000/api/users/cart-books", {
       signal,
       headers: {
-        Authorization: `Bearer ${getTokenFromSessionStorage()}`
-      }
-    })
+        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+      },
+    });
 
     const responseData = await response.json();
-    
+
     if (!response.ok) {
       throw responseData;
     }
 
     return {
-      books: responseData.data.booksData
-    }
+      books: responseData.data.booksData,
+    };
   } catch (error) {
     throw error;
   }
-
-}
+};
 
 export const removeFromCartServer = async (index) => {
   try {
-    const response = await fetch("http://localhost:3000/api/users/remove-cart", {
-      method: "POST",
-      body: JSON.stringify({index}),
-      headers: {
-        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
-        "Content-Type": "application/json"
+    const response = await fetch(
+      "http://localhost:3000/api/users/remove-cart",
+      {
+        method: "POST",
+        body: JSON.stringify({ index }),
+        headers: {
+          Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+          "Content-Type": "application/json",
+        },
       }
-    })
+    );
 
     const responseData = await response.json();
 
-    if (!response.ok)
-      throw responseData;
+    if (!response.ok) throw responseData;
 
     return {
-      newUserData: responseData.data.updatedUser
+      newUserData: responseData.data.updatedUser,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editCartItemQuantityServer = async (index, newQuantity) => {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/users/edit-quantity",
+      {
+        method: "POST",
+        body: JSON.stringify({ index, newQuantity }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+        },
+      }
+    );
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw responseData;
     }
+
+    return {
+      newUserData: responseData.data.updatedUser,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const clearCartServer = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/users/clear-cart", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getTokenFromSessionStorage()}`,
+      },
+    });
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw responseData;
+    }
+
+    return {
+      newUserData: responseData.data.updatedUser,
+    };
   } catch (error) {
     throw error;
   }

@@ -24,8 +24,6 @@ export default function Account() {
       deleteTokenFromSessionStorage();
       dispatchUserData(logoutAction());
       navigate("/home");
-    }).catch(() => {
-      alert("not logged in");
     })
     // deleteUserFromLocalStorage(userData.user);
     // deleteUserOnFromCookie();

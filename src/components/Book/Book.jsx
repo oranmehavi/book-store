@@ -67,7 +67,7 @@ export default function Book() {
       else {
         dispatchUserData(addToCartAction({book: id, quantity: amount}));
       }
-    })).catch(() => alert("failed adding to cart"));
+    }));
     // closeModal();
   };
   

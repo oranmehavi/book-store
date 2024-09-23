@@ -40,7 +40,7 @@ export const getBookByIDFromServer = async (id, signal) => {
     const responseData = await response.json();
 
     if (!response.ok) {
-      throw new Error(responseData);
+      throw responseData;
     }
 
     return {

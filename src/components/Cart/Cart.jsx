@@ -1,19 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./Cart.scss";
-import {
-  clearCart,
-  editCartItemQuantity,
-  getListOfBooksByIds,
-  removeFromCartInLocalStorage,
-} from "../../Utils/LocalStorage";
+
 import { LoginContext } from "../../context/LoginContext";
-import { clearCartAction, editCart, removeFromCart } from "../../actions/loginActions";
+import {
+  clearCartAction,
+  editCart,
+  removeFromCart,
+} from "../../actions/loginActions";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { saveUserOnCookie } from "../../Utils/cookies";
 import CartModal from "./CartModal";
 import { useNavigate } from "react-router-dom";
-import { getBooksDataFromCartServer, removeFromCartServer } from "../../server/auth";
+import {
+  clearCartServer,
+  editCartItemQuantityServer,
+  getBooksDataFromCartServer,
+  removeFromCartServer,
+} from "../../server/auth";
 
 export default function Cart() {
   const { userData, dispatchUserData } = useContext(LoginContext);
@@ -32,11 +36,11 @@ export default function Cart() {
     const signal = controller.signal;
     getBooksDataFromCartServer(signal).then((res) => {
       setBooksList(res.books);
-    })
+    });
 
     return () => {
       controller.abort();
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -62,29 +66,45 @@ export default function Cart() {
 
   const increaseQuantity = (index) => {
     if (userData.user.cart[index].quantity < 15) {
-      const res = editCartItemQuantity(
-        userData,
+      //   const res = editCartItemQuantity(
+      //     userData,
+      //     index,
+      //     userData.user.cart[index].quantity + 1
+      //   );
+      //   if (!res.isError) {
+      //     dispatchUserData(editCart(index, userData.user.cart[index].quantity + 1));
+      //     saveUserOnCookie(res.newUserData);
+      //   }
+      editCartItemQuantityServer(
         index,
         userData.user.cart[index].quantity + 1
-      );
-      if (!res.isError) {
-        dispatchUserData(editCart(index, userData.user.cart[index].quantity + 1));
-        saveUserOnCookie(res.newUserData);
-      }
+      ).then(() => {
+        dispatchUserData(
+          editCart(index, userData.user.cart[index].quantity + 1)
+        );
+      });
     }
   };
 
   const decreaseQuantity = (index) => {
     if (userData.user.cart[index].quantity > 1) {
-      const res = editCartItemQuantity(
-        userData,
+      //   const res = editCartItemQuantity(
+      //     userData,
+      //     index,
+      //     userData.user.cart[index].quantity - 1
+      //   );
+      //   if (!res.isError) {
+      //     dispatchUserData(editCart(index, userData.user.cart[index].quantity - 1));
+      //     saveUserOnCookie(res.newUserData);
+      //   }
+      editCartItemQuantityServer(
         index,
         userData.user.cart[index].quantity - 1
-      );
-      if (!res.isError) {
-        dispatchUserData(editCart(index, userData.user.cart[index].quantity - 1));
-        saveUserOnCookie(res.newUserData);
-      }
+      ).then(() => {
+        dispatchUserData(
+          editCart(index, userData.user.cart[index].quantity - 1)
+        );
+      });
     }
   };
 
@@ -96,7 +116,7 @@ export default function Cart() {
     // }
     removeFromCartServer(index).then((res) => {
       dispatchUserData(removeFromCart(index));
-    })
+    });
   };
 
   const isCartEmpty = () => {
@@ -109,16 +129,19 @@ export default function Cart() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-  }
-  
-  const buy  = () => {
-    const res = clearCart(userData);
-    if (!res.isError) {
-      dispatchUserData(clearCartAction());
-      saveUserOnCookie(res.newUserData);
-    }
   };
-  
+
+  const buy = () => {
+    // const res = clearCart(userData);
+    // if (!res.isError) {
+    //   dispatchUserData(clearCartAction());
+    //   saveUserOnCookie(res.newUserData);
+    // }
+    clearCartServer().then(() => {
+      dispatchUserData(clearCartAction())
+    })
+  };
+
   return (
     <>
       <div className="cart-container">
@@ -131,12 +154,13 @@ export default function Cart() {
                 <h5 className="price-before">
                   {!!userData.user &&
                     booksList[index].discount > 0 &&
-                    (
-                      booksList[index].price * item.quantity
-                    ).toLocaleString("he-IL", {
-                      style: "currency",
-                      currency: "ILS",
-                    })}
+                    (booksList[index].price * item.quantity).toLocaleString(
+                      "he-IL",
+                      {
+                        style: "currency",
+                        currency: "ILS",
+                      }
+                    )}
                 </h5>
                 <h4>
                   {!!userData.user
@@ -146,12 +170,13 @@ export default function Cart() {
                         style: "currency",
                         currency: "ILS",
                       })
-                    : (
-                        booksList[index].price * item.quantity
-                      ).toLocaleString("he-IL", {
-                        style: "currency",
-                        currency: "ILS",
-                      })}
+                    : (booksList[index].price * item.quantity).toLocaleString(
+                        "he-IL",
+                        {
+                          style: "currency",
+                          currency: "ILS",
+                        }
+                      )}
                 </h4>
                 <div className="controls">
                   <button onClick={() => increaseQuantity(index)}>+</button>
@@ -164,7 +189,12 @@ export default function Cart() {
               </div>
             ))}
         </div>
-        <CartModal isModalOpen={isModalOpen} closeModal={closeModal} buy={buy} navigate={navigate}/>
+        <CartModal
+          isModalOpen={isModalOpen}
+          closeModal={closeModal}
+          buy={buy}
+          navigate={navigate}
+        />
       </div>
       <div className="total-price">
         <h3 className="total">
@@ -185,7 +215,6 @@ export default function Cart() {
           </button>
         )}
       </div>
-      
     </>
   );
 }
