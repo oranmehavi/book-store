@@ -6,7 +6,6 @@ import { logoutAction } from "../../actions/loginActions";
 import { deleteUserOnFromCookie } from "../../Utils/cookies";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { logout } from "../../server/auth";
 import { deleteTokenFromSessionStorage } from "../../Utils/SessionStorage";
 export default function Header() {
   const { userData, dispatchUserData } = useContext(LoginContext);

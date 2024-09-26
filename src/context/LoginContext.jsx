@@ -22,8 +22,6 @@ export default function LoginContextProvider({ children }) {
     const controller = new AbortController();
     const signal = controller.signal;
     if (token) {
-
-     
       getUser(signal).then((res) => {
         dispatchUserData(loginAction(res.user))
       }).catch((res) => {

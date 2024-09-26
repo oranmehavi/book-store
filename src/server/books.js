@@ -1,14 +1,16 @@
 import { getTokenFromSessionStorage } from "../Utils/SessionStorage";
 
-export const getBooksFromServer = async (value, page, signal) => {
+export const getBooksFromServer = async (search, page, signal) => {
   try {
-    const response = await fetch("http://localhost:3000/api/books/get-books", {
+    const response = await fetch("http://localhost:3000/api/v2/books?" + new URLSearchParams({
+      page,
+      search
+    }).toString(), {
       signal,
-      method: "POST",
-      body: JSON.stringify({ value, page }),
+      method: "GET",
       headers: {
-        "Content-Type": "application/json",
-      },
+        // Authorization: `Bearer ${getTokenFromSessionStorage()}`
+      }
     });
 
     if (!response.ok) {
@@ -28,13 +30,9 @@ export const getBooksFromServer = async (value, page, signal) => {
 
 export const getBookByIDFromServer = async (id, signal) => {
   try {
-    const response = await fetch("http://localhost:3000/api/books/book-id", {
+    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
       signal,
-      method: "POST",
-      body: JSON.stringify({ id }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "GET",
     });
 
     const responseData = await response.json();
@@ -53,7 +51,7 @@ export const getBookByIDFromServer = async (id, signal) => {
 
 export const addBookServer = async (bookData) => {
   try {
-    const response = await fetch("http://localhost:3000/api/books/new", {
+    const response = await fetch("http://localhost:3000/api/v2/books/new", {
       method: "POST",
       body: JSON.stringify(bookData),
       headers: {
@@ -74,11 +72,9 @@ export const addBookServer = async (bookData) => {
 
 export const deleteBookServer = async (id) => {
   try {
-    const response = await fetch("http://localhost:3000/api/books/delete", {
-      method: "POST",
-      body: JSON.stringify({ id }),
+    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,
       },
     });
@@ -95,9 +91,9 @@ export const deleteBookServer = async (id) => {
 
 export const editBookServer = async (id, changes) => {
   try {
-    const response = await fetch("http://localhost:3000/api/books/edit", {
-      method: "POST",
-      body: JSON.stringify({ id, changes }),
+    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ changes }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,
