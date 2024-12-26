@@ -2,7 +2,7 @@ import { getTokenFromSessionStorage } from "../Utils/SessionStorage";
 
 export const signup = async (userData) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/signup", {
+    const response = await fetch("https://localhost:7103/api/users", {
       method: "POST",
       body: JSON.stringify(userData),
       headers: {
@@ -27,7 +27,7 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/login", {
+    const response = await fetch("https://localhost:7103/api/users/login", {
       method: "POST",
       body: JSON.stringify(credentials),
       headers: {
@@ -52,7 +52,7 @@ export const login = async (credentials) => {
 
 export const getUser = async (signal) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/get", {
+    const response = await fetch("https://localhost:7103/api/users", {
       signal,
       method: "GET",
       headers: {
@@ -75,7 +75,7 @@ export const getUser = async (signal) => {
 
 export const editUserServer = async (userData) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/edit-user", {
+    const response = await fetch("https://localhost:7103/api/users", {
       method: "PATCH",
       body: JSON.stringify(userData),
       headers: {
@@ -100,7 +100,7 @@ export const editUserServer = async (userData) => {
 
 export const deleteUser = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/delete", {
+    const response = await fetch("https://localhost:7103/api/users", {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,
@@ -117,7 +117,7 @@ export const deleteUser = async () => {
 
 export const addToCartServer = async (item) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/add-to-cart", {
+    const response = await fetch("https://localhost:7103/api/cart", {
       method: "POST",
       body: JSON.stringify(item),
       headers: {
@@ -140,7 +140,7 @@ export const addToCartServer = async (item) => {
 
 export const getBooksDataFromCartServer = async (signal) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/cart-books", {
+    const response = await fetch("https://localhost:7103/api/cart", {
       signal,
       headers: {
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,
@@ -164,7 +164,8 @@ export const getBooksDataFromCartServer = async (signal) => {
 export const removeFromCartServer = async (index) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/v2/user/remove-cart/${index}`,
+      `https://localhost:7103/api/cart/${index}`
+      ,
       {
         method: "DELETE",
         headers: {
@@ -188,12 +189,12 @@ export const removeFromCartServer = async (index) => {
 export const editCartItemQuantityServer = async (index, newQuantity) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/v2/user/edit-quantity/${index}`,
+      `https://localhost:7103/api/cart/${index}?` + new URLSearchParams({
+        newQuantity
+      }),
       {
         method: "PATCH",
-        body: JSON.stringify({ newQuantity }),
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${getTokenFromSessionStorage()}`,
         },
       }
@@ -215,7 +216,7 @@ export const editCartItemQuantityServer = async (index, newQuantity) => {
 
 export const clearCartServer = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/user/clear-cart", {
+    const response = await fetch("https://localhost:7103/api/cart", {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,

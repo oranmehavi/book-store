@@ -67,7 +67,7 @@ export default function Account() {
             </div>
           </div>
           <div className="details">
-            <h3>Username: {userData.user.username}</h3>
+            <h3>Username: {userData.user.userName}</h3>
             <h3>Email: {userData.user.email}</h3>
             <h3>Password: *****</h3>
           </div>

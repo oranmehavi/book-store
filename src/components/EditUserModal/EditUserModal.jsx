@@ -14,6 +14,7 @@ export default function EditUserModal({
   const [fullName, setFullName] = useState(user.fullname);
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [fullNameError, setFullNameError] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -71,6 +72,12 @@ export default function EditUserModal({
       updateValidInputs(2, true);
     }
   };
+
+  const onCurrentPasswordChange = (e) =>{
+    const currentPasswordInput = e.target.value.trim();
+    if (currentPasswordInput !== "")
+      setCurrentPassword(currentPasswordInput);
+  }
 
   const onPasswordBlur = (e) => {
     const passwordInput = e.target.value.trim();
@@ -131,16 +138,21 @@ export default function EditUserModal({
             {!validInputs[2] && (
               <h4 className="invalid-message">{emailError}</h4>
             )}
+            <input type="password"
+            placeholder="Old password"
+            onChange={onCurrentPasswordChange}
+            name="currentPassword"/>
             <input
               type="password"
               placeholder="New password"
               defaultValue={user.password}
               onChange={onPasswordBlur}
-              name="password"
+              name="newPassword"
             />
             {!validInputs[3] && (
               <h4 className="invalid-message">{passwordError}</h4>
             )}
+            
             {editUserError !== "" && (
               <div className="error-message">{editUserError}</div>
             )}

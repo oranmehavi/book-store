@@ -53,7 +53,6 @@ export default function AdminAuthentication() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target).entries());
-    
     login({...formData}).then((res) => {
       console.log(res.user);
       if (res.user.isAdmin) {
@@ -62,7 +61,7 @@ export default function AdminAuthentication() {
         saveTokenInSessionStorage(res.token);
         navigate("/dashboard");
       }
-    }).catch(() => {
+    }).catch((res) => {
       setLoginError(res.errorMessage);
     })
   };

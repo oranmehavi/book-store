@@ -2,7 +2,7 @@ import { getTokenFromSessionStorage } from "../Utils/SessionStorage";
 
 export const getBooksFromServer = async (search, page, signal) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/books?" + new URLSearchParams({
+    const response = await fetch("https://localhost:7103/api/books?" + new URLSearchParams({
       page,
       search
     }).toString(), {
@@ -30,7 +30,7 @@ export const getBooksFromServer = async (search, page, signal) => {
 
 export const getBookByIDFromServer = async (id, signal) => {
   try {
-    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
+    const response = await fetch(`https://localhost:7103/api/books/${id}`, {
       signal,
       method: "GET",
     });
@@ -51,7 +51,7 @@ export const getBookByIDFromServer = async (id, signal) => {
 
 export const addBookServer = async (bookData) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v2/books/new", {
+    const response = await fetch("https://localhost:7103/api/books", {
       method: "POST",
       body: JSON.stringify(bookData),
       headers: {
@@ -72,7 +72,7 @@ export const addBookServer = async (bookData) => {
 
 export const deleteBookServer = async (id) => {
   try {
-    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
+    const response = await fetch(`https://localhost:7103/api/books/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,
@@ -91,9 +91,9 @@ export const deleteBookServer = async (id) => {
 
 export const editBookServer = async (id, changes) => {
   try {
-    const response = await fetch(`http://localhost:3000/api/v2/books/${id}`, {
+    const response = await fetch(`https://localhost:7103/api/books/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ changes }),
+      body: JSON.stringify(changes),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getTokenFromSessionStorage()}`,

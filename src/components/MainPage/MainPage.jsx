@@ -82,7 +82,7 @@ export default function MainPage() {
             <div
               key={book.id}
               className="book"
-              onClick={() => navigateToBookPage(book._id)}
+              onClick={() => navigateToBookPage(book.id)}
             >
               <img src={book.image} alt="" />
               <h4>{book.bookName}</h4>

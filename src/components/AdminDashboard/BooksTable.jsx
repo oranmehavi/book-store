@@ -55,7 +55,7 @@ export default function BooksTable({ books, booksDispatch, updateBooks }) {
           {books.map((book, index) => (
             <tr key={book.id}>
               <td>
-                <span className="cell-header">Book ID:</span> {book._id}
+                <span className="cell-header">Book ID:</span> {book.id}
               </td>
               <td>
                 <span className="cell-header">Book name:</span> {book.bookName}
@@ -87,14 +87,14 @@ export default function BooksTable({ books, booksDispatch, updateBooks }) {
                 <div className="buttons">
                   <button
                     className="edit"
-                    onClick={() => navigateToBookEdit(book._id)}
+                    onClick={() => navigateToBookEdit(book.id)}
                   >
                     Edit book
                     <FontAwesomeIcon icon={faPenToSquare} />
                   </button>
                   <button
                     className="delete"
-                    onClick={() => openModal(book._id)}
+                    onClick={() => openModal(book.id)}
                   >
                     Delete book
                     <FontAwesomeIcon icon={faTrash} />
